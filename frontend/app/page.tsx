@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { Clinic, CoverageStats } from './types';
-import { mockClinics, mockPopulationPoints } from './data/mockData';
 import { calculateCoverage } from './utils/coverage';
 import { generateRecommendations, RecommendedLocation } from './utils/recommendations';
 import CoverageStatsComponent from './components/CoverageStats';
@@ -16,10 +15,17 @@ const Map = dynamic(() => import('./components/Map'), { ssr: false });
 
 type TabType = 'current' | 'hypothetical';
 
+interface PopulationPoint {
+  lat: number;
+  lng: number;
+  population: number;
+}
+
 export default function Home() {
   const [currentTab, setCurrentTab] = useState<TabType>('current');
-  const [currentClinics, setCurrentClinics] = useState<Clinic[]>(mockClinics);
-  const [hypotheticalClinics, setHypotheticalClinics] = useState<Clinic[]>(mockClinics);
+  const [currentClinics, setCurrentClinics] = useState<Clinic[]>([]);
+  const [hypotheticalClinics, setHypotheticalClinics] = useState<Clinic[]>([]);
+  const [populationPoints, setPopulationPoints] = useState<PopulationPoint[]>([]);
   const [currentStats, setCurrentStats] = useState<CoverageStats | null>(null);
   const [hypotheticalStats, setHypotheticalStats] = useState<CoverageStats | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -27,18 +33,58 @@ export default function Home() {
   const [showHeatmap, setShowHeatmap] = useState(true);
   const [recommendations, setRecommendations] = useState<RecommendedLocation[]>([]);
   const [isGeneratingRecommendations, setIsGeneratingRecommendations] = useState(false);
+  const [isLoadingData, setIsLoadingData] = useState(true);
+
+  // Load real data on mount
+  useEffect(() => {
+    async function loadData() {
+      try {
+        setIsLoadingData(true);
+        // Load clinics and population data in parallel
+        const [clinicsResponse, populationResponse] = await Promise.all([
+          fetch('/api/clinics'),
+          fetch('/api/population?sampleFactor=5'),
+        ]);
+
+        if (!clinicsResponse.ok || !populationResponse.ok) {
+          throw new Error('Failed to load data');
+        }
+
+        const clinics = await clinicsResponse.json();
+        const population = await populationResponse.json();
+
+        setCurrentClinics(clinics);
+        setHypotheticalClinics(clinics);
+        setPopulationPoints(population);
+      } catch (error) {
+        console.error('Error loading data:', error);
+        // Fallback to empty arrays on error
+        setCurrentClinics([]);
+        setHypotheticalClinics([]);
+        setPopulationPoints([]);
+      } finally {
+        setIsLoadingData(false);
+      }
+    }
+
+    loadData();
+  }, []);
 
   // Calculate coverage for current clinics
   useEffect(() => {
-    const stats = calculateCoverage(currentClinics, mockPopulationPoints);
-    setCurrentStats(stats);
-  }, [currentClinics]);
+    if (populationPoints.length > 0) {
+      const stats = calculateCoverage(currentClinics, populationPoints);
+      setCurrentStats(stats);
+    }
+  }, [currentClinics, populationPoints]);
 
   // Calculate coverage for hypothetical clinics
   useEffect(() => {
-    const stats = calculateCoverage(hypotheticalClinics, mockPopulationPoints);
-    setHypotheticalStats(stats);
-  }, [hypotheticalClinics]);
+    if (populationPoints.length > 0) {
+      const stats = calculateCoverage(hypotheticalClinics, populationPoints);
+      setHypotheticalStats(stats);
+    }
+  }, [hypotheticalClinics, populationPoints]);
 
   const handleRemoveClinic = (id: string) => {
     if (currentTab === 'current') {
@@ -77,7 +123,7 @@ export default function Home() {
     // Small delay to show loading state
     const clinicsToUse = currentTab === 'current' ? currentClinics : hypotheticalClinics;
     setTimeout(() => {
-      const recs = generateRecommendations(clinicsToUse, 5);
+      const recs = generateRecommendations(clinicsToUse, populationPoints, 5);
       setRecommendations(recs);
       setIsGeneratingRecommendations(false);
     }, 500);
@@ -167,14 +213,23 @@ export default function Home() {
                 </div>
               </div>
               <div className="h-[600px] w-full">
-                <Map 
-                  clinics={currentTab === 'current' ? currentClinics : hypotheticalClinics} 
-                  onMapClick={handleMapClick} 
-                  disableInteractions={isModalOpen}
-                  populationPoints={mockPopulationPoints}
-                  showHeatmap={showHeatmap}
-                  recommendedLocations={recommendations}
-                />
+                {isLoadingData ? (
+                  <div className="flex items-center justify-center h-full">
+                    <div className="text-center">
+                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                      <p className="text-black">Loading data...</p>
+                    </div>
+                  </div>
+                ) : (
+                  <Map 
+                    clinics={currentTab === 'current' ? currentClinics : hypotheticalClinics} 
+                    onMapClick={handleMapClick} 
+                    disableInteractions={isModalOpen}
+                    populationPoints={populationPoints}
+                    showHeatmap={showHeatmap}
+                    recommendedLocations={recommendations}
+                  />
+                )}
               </div>
             </div>
           </div>

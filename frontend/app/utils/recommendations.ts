@@ -1,5 +1,4 @@
 import { Clinic } from '../types';
-import { mockPopulationPoints } from '../data/mockData';
 import { calculateDistance } from './coverage';
 
 export interface RecommendedLocation {
@@ -71,11 +70,13 @@ function calculateNeedScore(
 /**
  * Generate recommended clinic locations
  * @param existingClinics Current clinics
+ * @param populationPoints Population density data points
  * @param numRecommendations Number of recommendations to generate
  * @param coverageRadius Coverage radius in km
  */
 export function generateRecommendations(
   existingClinics: Clinic[],
+  populationPoints: Array<{ lat: number; lng: number; population: number }>,
   numRecommendations: number = 5,
   coverageRadius: number = 5
 ): RecommendedLocation[] {
@@ -83,7 +84,7 @@ export function generateRecommendations(
   
   // Sample candidate locations from population points
   // Focus on areas with high population density
-  const candidatePoints = mockPopulationPoints
+  const candidatePoints = populationPoints
     .filter(point => {
       // Filter out points already covered by existing clinics
       return !existingClinics.some(clinic => {
@@ -100,7 +101,7 @@ export function generateRecommendations(
       point.lat,
       point.lng,
       existingClinics,
-      mockPopulationPoints,
+      populationPoints,
       coverageRadius
     );
 
