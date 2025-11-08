@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { MapContainer, TileLayer, Circle, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { Clinic } from '../types';
+import HeatmapLayer from './HeatmapLayer';
 
 // Fix for default marker icons in Next.js
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -17,6 +18,9 @@ interface MapProps {
   clinics: Clinic[];
   onMapClick?: (lat: number, lng: number) => void;
   disableInteractions?: boolean;
+  populationPoints?: Array<{ lat: number; lng: number; population: number }>;
+  showHeatmap?: boolean;
+  recommendedLocations?: Array<{ lat: number; lng: number; score: number; uncoveredPopulation: number }>;
 }
 
 function MapUpdater({ clinics }: { clinics: Clinic[] }) {
@@ -70,7 +74,14 @@ function MapClickHandler({ onMapClick, disabled }: { onMapClick?: (lat: number, 
   return null;
 }
 
-export default function Map({ clinics, onMapClick, disableInteractions = false }: MapProps) {
+export default function Map({ 
+  clinics, 
+  onMapClick, 
+  disableInteractions = false,
+  populationPoints = [],
+  showHeatmap = false,
+  recommendedLocations = [],
+}: MapProps) {
   const getClinicColor = (type: Clinic['type']) => {
     switch (type) {
       case 'gaia': return '#10b981'; // green
@@ -90,6 +101,17 @@ export default function Map({ clinics, onMapClick, disableInteractions = false }
     });
   };
 
+  const getRecommendedIcon = () => {
+    return L.divIcon({
+      className: 'recommended-marker',
+      html: `<div style="background-color: #f59e0b; width: 24px; height: 24px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center;">
+        <div style="width: 12px; height: 12px; background-color: white; border-radius: 50%;"></div>
+      </div>`,
+      iconSize: [24, 24],
+      iconAnchor: [12, 12],
+    });
+  };
+
   // Malawi approximate center
   const center: [number, number] = [-15.7833, 35.5167];
 
@@ -104,6 +126,7 @@ export default function Map({ clinics, onMapClick, disableInteractions = false }
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        <HeatmapLayer populationPoints={populationPoints} enabled={showHeatmap} />
         <MapUpdater clinics={clinics} />
         <MapClickHandler onMapClick={onMapClick} disabled={disableInteractions} />
         {clinics.map((clinic) => (
@@ -124,8 +147,39 @@ export default function Map({ clinics, onMapClick, disableInteractions = false }
             >
               <Popup>
                 <div className="p-2">
-                  <h3 className="font-semibold">{clinic.name}</h3>
-                  <p className="text-sm text-gray-600 capitalize">{clinic.type}</p>
+                  <h3 className="font-semibold text-black">{clinic.name}</h3>
+                  <p className="text-sm text-black capitalize">{clinic.type}</p>
+                </div>
+              </Popup>
+            </Marker>
+          </div>
+        ))}
+        {recommendedLocations.map((rec, index) => (
+          <div key={`rec-${index}`}>
+            <Circle
+              center={[rec.lat, rec.lng]}
+              radius={5000} // 5km radius
+              pathOptions={{
+                color: '#f59e0b',
+                fillColor: '#f59e0b',
+                fillOpacity: 0.15,
+                weight: 2,
+                dashArray: '10, 5',
+              }}
+            />
+            <Marker
+              position={[rec.lat, rec.lng]}
+              icon={getRecommendedIcon()}
+            >
+              <Popup>
+                <div className="p-2">
+                  <h3 className="font-semibold text-amber-600">Recommended Location #{index + 1}</h3>
+                  <p className="text-sm text-black">
+                    Score: {(rec.score * 100).toFixed(1)}%
+                  </p>
+                  <p className="text-sm text-black">
+                    Uncovered Population: {rec.uncoveredPopulation.toLocaleString()}
+                  </p>
                 </div>
               </Popup>
             </Marker>

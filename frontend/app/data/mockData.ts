@@ -1,9 +1,5 @@
 import { Clinic } from '../types';
 
-// Malawi approximate center coordinates
-const MALAWI_CENTER_LAT = -13.9626;
-const MALAWI_CENTER_LNG = 33.7741;
-
 // Mock clinic data - focusing on Mulanje, Phalombe, and Mangochi districts
 export const mockClinics: Clinic[] = [
   // GAIA clinics
@@ -28,11 +24,47 @@ export const mockClinics: Clinic[] = [
 // In reality, this would come from the HDX population density data
 export const mockPopulationPoints: Array<{ lat: number; lng: number; population: number }> = [];
 
-// Generate mock population points in a grid around the clinic areas
-for (let i = 0; i < 50; i++) {
-  const lat = MALAWI_CENTER_LAT + (Math.random() - 0.5) * 3;
-  const lng = MALAWI_CENTER_LNG + (Math.random() - 0.5) * 3;
-  const population = Math.floor(Math.random() * 5000) + 500; // 500-5500 people per grid point
+// Generate a denser grid of population points for heatmap visualization
+// Focus on Mulanje, Phalombe, and Mangochi districts area
+const gridSize = 0.05; // ~5.5km spacing
+const latStart = -16.2;
+const latEnd = -14.3;
+const lngStart = 35.2;
+const lngEnd = 35.7;
+
+// Create a grid of population points
+for (let lat = latStart; lat <= latEnd; lat += gridSize) {
+  for (let lng = lngStart; lng <= lngEnd; lng += gridSize) {
+    // Add some randomness to make it more realistic
+    const finalLat = lat + (Math.random() - 0.5) * gridSize * 0.3;
+    const finalLng = lng + (Math.random() - 0.5) * gridSize * 0.3;
+    
+    // Higher population density near urban areas (Mulanje, Phalombe, Mangochi)
+    const distToMulanje = Math.sqrt(Math.pow(finalLat - (-16.0333), 2) + Math.pow(finalLng - 35.5000, 2));
+    const distToPhalombe = Math.sqrt(Math.pow(finalLat - (-15.7833), 2) + Math.pow(finalLng - 35.5167, 2));
+    const distToMangochi = Math.sqrt(Math.pow(finalLat - (-14.4833), 2) + Math.pow(finalLng - 35.2667, 2));
+    
+    const minDist = Math.min(distToMulanje, distToPhalombe, distToMangochi);
+    
+    // Population density decreases with distance from urban centers
+    let population = 0;
+    if (minDist < 0.2) {
+      population = Math.floor(Math.random() * 8000) + 2000; // High density: 2000-10000
+    } else if (minDist < 0.5) {
+      population = Math.floor(Math.random() * 5000) + 1000; // Medium density: 1000-6000
+    } else {
+      population = Math.floor(Math.random() * 3000) + 200; // Low density: 200-3200
+    }
+    
+    mockPopulationPoints.push({ lat: finalLat, lng: finalLng, population });
+  }
+}
+
+// Also add some random scattered points for rural areas
+for (let i = 0; i < 100; i++) {
+  const lat = latStart + Math.random() * (latEnd - latStart);
+  const lng = lngStart + Math.random() * (lngEnd - lngStart);
+  const population = Math.floor(Math.random() * 2000) + 100; // 100-2100 people
   mockPopulationPoints.push({ lat, lng, population });
 }
 

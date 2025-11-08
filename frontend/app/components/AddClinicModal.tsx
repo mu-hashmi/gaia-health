@@ -62,38 +62,38 @@ export default function AddClinicModal({
         style={{ zIndex: 10001 }}
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="text-2xl font-bold mb-4">Add New Clinic</h2>
+        <h2 className="text-2xl font-bold text-black mb-4">Add New Clinic</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-black mb-1">
               Clinic Name
             </label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-black placeholder-gray-400"
               placeholder="Enter clinic name"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-black mb-1">
               Clinic Type
             </label>
             <select
               value={type}
               onChange={(e) => setType(e.target.value as ClinicType)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-black bg-white"
             >
-              <option value="gaia">GAIA</option>
-              <option value="govt">Government</option>
-              <option value="cham">CHAM</option>
+              <option value="gaia" className="text-black">GAIA</option>
+              <option value="govt" className="text-black">Government</option>
+              <option value="cham" className="text-black">CHAM</option>
             </select>
           </div>
 
-          <div className="text-sm text-gray-600">
+          <div className="text-sm text-black">
             <p>Location: {lat.toFixed(4)}, {lng.toFixed(4)}</p>
           </div>
 
@@ -101,7 +101,7 @@ export default function AddClinicModal({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-black font-medium"
             >
               Cancel
             </button>

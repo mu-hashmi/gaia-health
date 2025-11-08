@@ -17,18 +17,18 @@ export default function CoverageStats({ stats, previousStats }: CoverageStatsPro
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6 space-y-4">
-      <h2 className="text-2xl font-bold text-gray-800 mb-4">Coverage Statistics</h2>
+      <h2 className="text-2xl font-bold text-black mb-4">Coverage Statistics</h2>
       
       <div className="grid grid-cols-2 gap-4">
         <div className="bg-blue-50 p-4 rounded-lg">
-          <div className="text-sm text-gray-600">Total Population</div>
+          <div className="text-sm text-black">Total Population</div>
           <div className="text-2xl font-bold text-blue-700">
             {stats.totalPopulation.toLocaleString()}
           </div>
         </div>
 
         <div className="bg-green-50 p-4 rounded-lg">
-          <div className="text-sm text-gray-600">Covered Population</div>
+          <div className="text-sm text-black">Covered Population</div>
           <div className="text-2xl font-bold text-green-700">
             {stats.coveredPopulation.toLocaleString()}
             {populationChange !== 0 && (
@@ -40,14 +40,14 @@ export default function CoverageStats({ stats, previousStats }: CoverageStatsPro
         </div>
 
         <div className="bg-red-50 p-4 rounded-lg">
-          <div className="text-sm text-gray-600">Uncovered Population</div>
+          <div className="text-sm text-black">Uncovered Population</div>
           <div className="text-2xl font-bold text-red-700">
             {stats.uncoveredPopulation.toLocaleString()}
           </div>
         </div>
 
         <div className="bg-purple-50 p-4 rounded-lg">
-          <div className="text-sm text-gray-600">Coverage Percentage</div>
+          <div className="text-sm text-black">Coverage Percentage</div>
           <div className="text-2xl font-bold text-purple-700">
             {stats.coveragePercentage.toFixed(1)}%
             {coverageChange !== 0 && (
