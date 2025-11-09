@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 import { Clinic, CoverageStats } from './types';
 import { calculateCoverage } from './utils/coverage';
 import { generateRecommendations, RecommendedLocation } from './utils/recommendations';
+import { getLowCoverageClinicIds, LowCoverageClinic, analyzeDistrictClinics } from './utils/districtOptimization';
 import CoverageStatsComponent from './components/CoverageStats';
 import ClinicList from './components/ClinicList';
 import AddClinicModal from './components/AddClinicModal';
@@ -39,6 +40,10 @@ export default function Home() {
   const [selectedDistrict, setSelectedDistrict] = useState<string>('');
   const [selectedClinicTypes, setSelectedClinicTypes] = useState<Set<Clinic['type']>>(new Set(['gaia', 'govt', 'cham']));
   const [districts, setDistricts] = useState<Array<{ name: string; id: number }>>([]);
+  const [optimizationDistrict, setOptimizationDistrict] = useState<string>('');
+  const [lowCoverageClinics, setLowCoverageClinics] = useState<Set<string>>(new Set());
+  const [districtAnalysis, setDistrictAnalysis] = useState<LowCoverageClinic[]>([]);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   // Load real data on mount
   useEffect(() => {
@@ -193,6 +198,47 @@ export default function Home() {
     setSelectedClinicTypes(newSet);
   };
 
+  const handleAnalyzeDistrictClinics = () => {
+    if (!optimizationDistrict || populationPoints.length === 0) {
+      alert('Please select a district to analyze');
+      return;
+    }
+
+    setIsAnalyzing(true);
+
+    setTimeout(() => {
+      const clinicsToAnalyze = currentTab === 'current' ? currentClinics : hypotheticalClinics;
+
+      // Get analysis of clinics in the selected district
+      const analysis = analyzeDistrictClinics(
+        clinicsToAnalyze,
+        populationPoints,
+        optimizationDistrict,
+        5 // 5km coverage radius
+      );
+
+      setDistrictAnalysis(analysis);
+
+      // Mark the bottom 50% (low coverage clinics) as stars
+      const lowCoverageIds = getLowCoverageClinicIds(
+        clinicsToAnalyze,
+        populationPoints,
+        optimizationDistrict,
+        5,
+        50 // Bottom 50%
+      );
+
+      setLowCoverageClinics(lowCoverageIds);
+      setIsAnalyzing(false);
+    }, 300);
+  };
+
+  const handleClearAnalysis = () => {
+    setOptimizationDistrict('');
+    setLowCoverageClinics(new Set());
+    setDistrictAnalysis([]);
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
       <header className="bg-white shadow-sm border-b">
@@ -287,6 +333,41 @@ export default function Home() {
                       </label>
                     </div>
                   </div>
+                  <div className="pt-3 border-t">
+                    <label htmlFor="optimization-district" className="text-sm font-medium text-black mb-2 block">District Clinic Optimization:</label>
+                    <div className="flex items-center gap-2">
+                      <select
+                        id="optimization-district"
+                        value={optimizationDistrict}
+                        onChange={(e) => setOptimizationDistrict(e.target.value)}
+                        className="px-3 py-2 border rounded text-sm flex-1"
+                      >
+                        <option value="">Select district to analyze</option>
+                        {districts.map(district => (
+                          <option key={district.id} value={district.name}>
+                            {district.name}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        type="button"
+                        onClick={handleAnalyzeDistrictClinics}
+                        disabled={isAnalyzing || !optimizationDistrict}
+                        className="px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                      >
+                        {isAnalyzing ? 'Analyzing...' : 'Analyze'}
+                      </button>
+                      {lowCoverageClinics.size > 0 && (
+                        <button
+                          type="button"
+                          onClick={handleClearAnalysis}
+                          className="px-3 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 text-sm font-medium whitespace-nowrap"
+                        >
+                          Clear
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 </div>
                 <div className="flex gap-4 mt-3 text-sm">
                   <div className="flex items-center gap-2">
@@ -307,6 +388,12 @@ export default function Home() {
                       <span className="text-black font-medium">Recommended</span>
                     </div>
                   )}
+                  {lowCoverageClinics.size > 0 && (
+                    <div className="flex items-center gap-2">
+                      <div className="text-lg">⭐</div>
+                      <span className="text-black font-medium">Low Coverage</span>
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="h-[600px] w-full">
@@ -318,14 +405,15 @@ export default function Home() {
                     </div>
                   </div>
                 ) : (
-                  <Map 
-                    clinics={currentTab === 'current' ? filteredCurrentClinics : filteredHypotheticalClinics} 
-                    onMapClick={handleMapClick} 
+                  <Map
+                    clinics={currentTab === 'current' ? filteredCurrentClinics : filteredHypotheticalClinics}
+                    onMapClick={handleMapClick}
                     disableInteractions={isModalOpen}
                     populationPoints={populationPoints}
                     showHeatmap={showHeatmap}
                     recommendedLocations={recommendations}
                     selectedDistrict={selectedDistrict}
+                    lowCoverageClinicIds={lowCoverageClinics}
                   />
                 )}
               </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { MapContainer, TileLayer, Circle, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { Clinic } from '../types';
@@ -23,6 +24,7 @@ interface MapProps {
   showHeatmap?: boolean;
   recommendedLocations?: Array<{ lat: number; lng: number; score: number; uncoveredPopulation: number }>;
   selectedDistrict?: string;
+  lowCoverageClinicIds?: Set<string>;
 }
 
 function MapUpdater({ clinics }: { clinics: Clinic[] }) {
@@ -77,15 +79,18 @@ function MapClickHandler({ onMapClick, disabled }: { onMapClick?: (lat: number, 
   return null;
 }
 
-export default function Map({ 
-  clinics, 
-  onMapClick, 
+export default function Map({
+  clinics,
+  onMapClick,
   disableInteractions = false,
   populationPoints = [],
   showHeatmap = false,
   recommendedLocations = [],
   selectedDistrict,
+  lowCoverageClinicIds = new Set(),
 }: MapProps) {
+  const router = useRouter();
+
   const getClinicColor = (type: Clinic['type']) => {
     switch (type) {
       case 'gaia': return '#10b981'; // green
@@ -111,6 +116,16 @@ export default function Map({
       html: `<div style="background-color: #f59e0b; width: 24px; height: 24px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center;">
         <div style="width: 12px; height: 12px; background-color: white; border-radius: 50%;"></div>
       </div>`,
+      iconSize: [24, 24],
+      iconAnchor: [12, 12],
+    });
+  };
+
+  const getLowCoverageIcon = (type: Clinic['type']) => {
+    const color = getClinicColor(type);
+    return L.divIcon({
+      className: 'low-coverage-marker',
+      html: `<div style="font-size: 24px; text-shadow: 0 2px 3px rgba(0,0,0,0.3); filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">⭐</div>`,
       iconSize: [24, 24],
       iconAnchor: [12, 12],
     });
@@ -147,34 +162,56 @@ export default function Map({
         />
         <MapUpdater clinics={clinics} />
         <MapClickHandler onMapClick={onMapClick} disabled={disableInteractions} />
-        {clinics.map((clinic) => (
+        {clinics.map((clinic) => {
+          const isLowCoverage = lowCoverageClinicIds.has(clinic.id);
+          return (
           <div key={clinic.id}>
-            <Circle
-              center={[clinic.lat, clinic.lng]}
-              radius={5000} // 5km in meters
-              pathOptions={{
-                color: getClinicColor(clinic.type),
-                fillColor: getClinicColor(clinic.type),
-                fillOpacity: 0.1,
-                weight: 2,
-              }}
-            />
+            {!isLowCoverage && (
+              <Circle
+                center={[clinic.lat, clinic.lng]}
+                radius={5000} // 5km in meters
+                pathOptions={{
+                  color: getClinicColor(clinic.type),
+                  fillColor: getClinicColor(clinic.type),
+                  fillOpacity: 0.1,
+                  weight: 2,
+                }}
+              />
+            )}
             <Marker
               position={[clinic.lat, clinic.lng]}
-              icon={getClinicIcon(clinic.type)}
+              icon={isLowCoverage ? getLowCoverageIcon(clinic.type) : getClinicIcon(clinic.type)}
             >
               <Popup>
-                <div className="p-2">
-                  <h3 className="font-semibold text-black">{clinic.name}</h3>
-                  <p className="text-sm text-black capitalize">{clinic.type}</p>
+                <div className="p-3 min-w-[260px]">
+                  <h3 className="font-semibold text-black mb-1">{clinic.name}</h3>
+                  <p className="text-sm text-black capitalize mb-1">{clinic.type}</p>
                   {clinic.district && (
-                    <p className="text-sm text-gray-600">District: {clinic.district}</p>
+                    <p className="text-sm text-gray-600 mb-3">District: {clinic.district}</p>
                   )}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      router.push(`/clinic/${clinic.id}`);
+                      // Close the popup after clicking
+                      const popup = document.querySelector('.leaflet-popup');
+                      if (popup) {
+                        const closeButton = popup.querySelector('.leaflet-popup-close-button') as HTMLElement;
+                        if (closeButton) {
+                          closeButton.click();
+                        }
+                      }
+                    }}
+                    className="w-full px-3 py-2 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700 transition-colors"
+                  >
+                    View Analysis
+                  </button>
                 </div>
               </Popup>
             </Marker>
           </div>
-        ))}
+        );
+        })}
         {recommendedLocations.map((rec, index) => (
           <div key={`rec-${index}`}>
             <Circle

@@ -1,0 +1,1885 @@
+{
+  "summary": {
+    "total_facilities": 303,
+    "facility_types": {
+      "pharmacy": 27,
+      "hospital": 199,
+      "clinic": 67,
+      "doctors": 2,
+      "dentist": 8
+    },
+    "by_location": {
+      "Blantyre": 5,
+      "Lilongwe": 4,
+      "Balaka": 3,
+      "Dowa/Dzaleka": 1,
+      "Ulongwe": 1,
+      "Rumphi": 1,
+      "Monkey Bay": 1
+    },
+    "data_quality": {
+      "with_coordinates": 152,
+      "with_name": 256,
+      "with_operator": 38
+    }
+  },
+  "sample_facilities": [
+    {
+      "id": "b2b56c282b50407d9323eda98f5065cd",
+      "name": "Home Care",
+      "type": "pharmacy",
+      "location": {
+        "latitude": -13.93951766,
+        "longitude": 33.79101882,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 9.375,
+        "osm_id": "12460738117",
+        "last_updated": "2024/12/29 11:52:17+00"
+      }
+    },
+    {
+      "id": "5b4bee50f2414022bc31940ffeb91bab",
+      "name": "Unnamed pharmacy",
+      "type": "pharmacy",
+      "location": {
+        "latitude": -13.93799257,
+        "longitude": 33.79190982,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 9.375,
+        "osm_id": "1883763938",
+        "last_updated": "2020/06/27 19:01:19+00"
+      }
+    },
+    {
+      "id": "b306ba8516214e60aea906e30bc379bc",
+      "name": "Khombedza Health Center",
+      "type": "hospital",
+      "location": {
+        "latitude": null,
+        "longitude": null,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": "Malawi Ministry of Health",
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 12.5,
+        "osm_id": "460598829",
+        "last_updated": "2016/12/19 19:19:39+00"
+      }
+    },
+    {
+      "id": "136b7014f5504b17b01e268164b8e0e6",
+      "name": "Kalulu Clinic",
+      "type": "clinic",
+      "location": {
+        "latitude": -16.24138533,
+        "longitude": 34.91183157,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": "Mo-Fr 07:00-17:00; Sa-Su 09:00-11:00",
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 12.5,
+        "osm_id": "4439024095",
+        "last_updated": "2016/10/09 14:06:47+00"
+      }
+    },
+    {
+      "id": "0fe9d8484bd9462baf2f703d962bd2bf",
+      "name": "Khonjeni Health Centre",
+      "type": "hospital",
+      "location": {
+        "latitude": null,
+        "longitude": null,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 12.5,
+        "osm_id": "805384243",
+        "last_updated": "2020/05/18 12:40:20+00"
+      }
+    },
+    {
+      "id": "76cc4f9617d642b6bbe4fb690a44e1bc",
+      "name": "Unnamed hospital",
+      "type": "hospital",
+      "location": {
+        "latitude": null,
+        "longitude": null,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 9.375,
+        "osm_id": "447381370",
+        "last_updated": "2020/03/01 19:24:03+00"
+      }
+    },
+    {
+      "id": "ae38d934412f48b8a248dcc29ecae0f5",
+      "name": "Chilonga Health Center",
+      "type": "hospital",
+      "location": {
+        "latitude": null,
+        "longitude": null,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 12.5,
+        "osm_id": "693461762",
+        "last_updated": "2024/08/20 18:02:44+00"
+      }
+    },
+    {
+      "id": "f6c5e50cf0204834a398649ffec78319",
+      "name": "Mtemanyama",
+      "type": "hospital",
+      "location": {
+        "latitude": -15.59130177,
+        "longitude": 35.73218269,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 9.375,
+        "osm_id": "9131089617",
+        "last_updated": "2021/09/29 05:19:07+00"
+      }
+    },
+    {
+      "id": "85d818050c904a1db34f9129a6a62033",
+      "name": "Shalom Private Clinic",
+      "type": "clinic",
+      "location": {
+        "latitude": -10.45384003,
+        "longitude": 34.21049586,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": "Mo-Sa 07:30-20:00",
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 15.625,
+        "osm_id": "6823009385",
+        "last_updated": "2019/09/26 12:54:17+00"
+      }
+    },
+    {
+      "id": "17805ac6f6014e1bb1387d8ddc1f5f04",
+      "name": "Chacogo Medical Clinic",
+      "type": "clinic",
+      "location": {
+        "latitude": -14.07302654,
+        "longitude": 33.83193768,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 9.375,
+        "osm_id": "4456212490",
+        "last_updated": "2016/10/20 10:40:10+00"
+      }
+    },
+    {
+      "id": "6efe2e9c3ad34c09a4f12efe6a60bcc4",
+      "name": "Makata heath Centre",
+      "type": "clinic",
+      "location": {
+        "latitude": -15.63008307,
+        "longitude": 35.07967323,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 9.375,
+        "osm_id": "8345664017",
+        "last_updated": "2021/01/21 15:05:41+00"
+      }
+    },
+    {
+      "id": "18f671d2fd444b10bb5e04ae143fdb9d",
+      "name": "Shifa Hospital",
+      "type": "hospital",
+      "location": {
+        "latitude": -15.78724183,
+        "longitude": 35.01043184,
+        "city": "Blantyre",
+        "address": "Haile Selassie Avenue",
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 18.75,
+        "osm_id": "7608912603",
+        "last_updated": "2020/06/10 12:32:39+00"
+      }
+    },
+    {
+      "id": "d7340629917a47f49c708e7ec6432347",
+      "name": "Unnamed hospital",
+      "type": "hospital",
+      "location": {
+        "latitude": null,
+        "longitude": null,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 6.25,
+        "osm_id": "78605112",
+        "last_updated": "2019/05/02 13:56:05+00"
+      }
+    },
+    {
+      "id": "94207e3e239e46ab831ab30fd8fbb853",
+      "name": "Unnamed hospital",
+      "type": "hospital",
+      "location": {
+        "latitude": null,
+        "longitude": null,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 9.375,
+        "osm_id": "998391475",
+        "last_updated": "2021/11/02 11:51:06+00"
+      }
+    },
+    {
+      "id": "c569744315744307ab7eab876c137b35",
+      "name": "ABC Clinic",
+      "type": "clinic",
+      "location": {
+        "latitude": -13.96834118,
+        "longitude": 33.74154774,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 9.375,
+        "osm_id": "2031724422",
+        "last_updated": "2013/01/26 18:19:57+00"
+      }
+    },
+    {
+      "id": "48c46bc2c9b6432f8780c3ec44308c16",
+      "name": "Dambe Health Post",
+      "type": "hospital",
+      "location": {
+        "latitude": null,
+        "longitude": null,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 12.5,
+        "osm_id": "715629098",
+        "last_updated": "2020/05/18 12:35:08+00"
+      }
+    },
+    {
+      "id": "e28c231538d64aab9c60ed36dcd4ebc0",
+      "name": "Chiradzulu District Hospital",
+      "type": "hospital",
+      "location": {
+        "latitude": null,
+        "longitude": null,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 9.375,
+        "osm_id": "1381224923",
+        "last_updated": "2025/04/25 18:17:10+00"
+      }
+    },
+    {
+      "id": "ed6ffab141a1444a8c4faceded7d7c13",
+      "name": "Billy Riordan Memorial Clinic",
+      "type": "hospital",
+      "location": {
+        "latitude": null,
+        "longitude": null,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 12.5,
+        "osm_id": "791436628",
+        "last_updated": "2022/05/16 10:51:55+00"
+      }
+    },
+    {
+      "id": "05062a04899b4fc3a0178bafefd6ffdf",
+      "name": "Unnamed pharmacy",
+      "type": "pharmacy",
+      "location": {
+        "latitude": -13.77111265,
+        "longitude": 34.44077608,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 6.25,
+        "osm_id": "5276605521",
+        "last_updated": "2017/12/11 03:36:49+00"
+      }
+    },
+    {
+      "id": "a65119e243cf403d9471b6bde4c06ffb",
+      "name": "GenNex",
+      "type": "pharmacy",
+      "location": {
+        "latitude": -13.97840651,
+        "longitude": 33.7616602,
+        "city": null,
+        "address": "Santa Plaza",
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 15.625,
+        "osm_id": "8333352776",
+        "last_updated": "2021/02/08 22:32:25+00"
+      }
+    },
+    {
+      "id": "ae3a96af7c6441088d1ea900d222b3fb",
+      "name": "Mtemanyama",
+      "type": "hospital",
+      "location": {
+        "latitude": -15.59210995,
+        "longitude": 35.73217783,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 9.375,
+        "osm_id": "9131089717",
+        "last_updated": "2021/09/29 05:19:08+00"
+      }
+    },
+    {
+      "id": "3d88ec943e924b3fa4f5f8d762152c1d",
+      "name": "Chimaliro Health Centre",
+      "type": "hospital",
+      "location": {
+        "latitude": null,
+        "longitude": null,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 12.5,
+        "osm_id": "469169888",
+        "last_updated": "2020/05/18 12:42:33+00"
+      }
+    },
+    {
+      "id": "b53c401306484cdcbbcc3a61412268ec",
+      "name": "Nyungwe Hospital",
+      "type": "hospital",
+      "location": {
+        "latitude": -10.28746193,
+        "longitude": 34.10772023,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 9.375,
+        "osm_id": "476501750",
+        "last_updated": "2009/08/29 13:17:59+00"
+      }
+    },
+    {
+      "id": "8e82342fa7c545f7a54e63da1f9afd20",
+      "name": "Lengwe Clinic",
+      "type": "clinic",
+      "location": {
+        "latitude": -16.20031551,
+        "longitude": 34.79959228,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 12.5,
+        "osm_id": "6463835248",
+        "last_updated": "2019/05/10 08:40:57+00"
+      }
+    },
+    {
+      "id": "5bedc73b460247248ccbafe95fe401a1",
+      "name": "Life Pharmacies",
+      "type": "pharmacy",
+      "location": {
+        "latitude": -15.78994575,
+        "longitude": 35.00442386,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": "no",
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 12.5,
+        "osm_id": "3241061865",
+        "last_updated": "2017/02/14 14:23:51+00"
+      }
+    },
+    {
+      "id": "7f2c90f398ea4a3888cce5f0e72d602d",
+      "name": "Occupational Health (OH) Office - Illovo",
+      "type": "hospital",
+      "location": {
+        "latitude": null,
+        "longitude": null,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": "Paul Bandawe",
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": "Mo-Fr 07:00-17:00",
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 15.625,
+        "osm_id": "453327189",
+        "last_updated": "2023/05/21 17:18:13+00"
+      }
+    },
+    {
+      "id": "3c35df6735654b2a8090f592aac25f6b",
+      "name": "Loudon Hospital",
+      "type": "hospital",
+      "location": {
+        "latitude": -12.13805506,
+        "longitude": 33.4751639,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 9.375,
+        "osm_id": "1023278824",
+        "last_updated": "2010/12/05 18:16:50+00"
+      }
+    },
+    {
+      "id": "75ca170e095f41c8991d43f65bdb8494",
+      "name": "Matawale Health Center",
+      "type": "hospital",
+      "location": {
+        "latitude": null,
+        "longitude": null,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 12.5,
+        "osm_id": "1054775153",
+        "last_updated": "2022/04/25 14:01:19+00"
+      }
+    },
+    {
+      "id": "88d3831855f74aac812168cf8659420e",
+      "name": "Dzaleka Covid 19 Isolation Center",
+      "type": "hospital",
+      "location": {
+        "latitude": -13.66031814,
+        "longitude": 33.86955415,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": "UN agency",
+        "operator_type": "ngo",
+        "operational_status": null,
+        "opening_hours": "24/7",
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 21.875,
+        "osm_id": "9359979109",
+        "last_updated": "2025/07/07 14:02:09+00"
+      }
+    },
+    {
+      "id": "962bdf41be88446e845291b675f4dc36",
+      "name": "Factory Clinic (Illovo)",
+      "type": "clinic",
+      "location": {
+        "latitude": -16.25822583,
+        "longitude": 34.89160789,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": "Mo-Fr 07:00-17:00; Sa-Su 09:00-11:00",
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 12.5,
+        "osm_id": "4439097690",
+        "last_updated": "2016/10/09 14:06:49+00"
+      }
+    },
+    {
+      "id": "4a2a150250f7485faca98c5586b0fc77",
+      "name": "ONSE Health Activity",
+      "type": "hospital",
+      "location": {
+        "latitude": -15.39003216,
+        "longitude": 35.35965755,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 12.5,
+        "osm_id": "12745850004",
+        "last_updated": "2025/04/11 00:26:20+00"
+      }
+    },
+    {
+      "id": "3514d8f39d1440489967b353ce0996de",
+      "name": "Company Medical officer office",
+      "type": "doctors",
+      "location": {
+        "latitude": -16.25845985,
+        "longitude": 34.89187485,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 9.375,
+        "osm_id": "6461548731",
+        "last_updated": "2023/05/21 17:18:13+00"
+      }
+    },
+    {
+      "id": "477721f1afaa4423831b98d80399ce01",
+      "name": "Magaleta Health Center",
+      "type": "hospital",
+      "location": {
+        "latitude": -15.55099831,
+        "longitude": 34.62803835,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 9.375,
+        "osm_id": "1269920168",
+        "last_updated": "2016/06/02 07:32:03+00"
+      }
+    },
+    {
+      "id": "462b850b216b4ef39196058ce9e9183d",
+      "name": "Ntcheu District Hospital",
+      "type": "hospital",
+      "location": {
+        "latitude": null,
+        "longitude": null,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": "Ministry of Health",
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 12.5,
+        "osm_id": "516826461",
+        "last_updated": "2017/08/19 12:30:11+00"
+      }
+    },
+    {
+      "id": "21961d68d6ea474b9dabbbccb12fc819",
+      "name": "Koche Hospital",
+      "type": "hospital",
+      "location": {
+        "latitude": null,
+        "longitude": null,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": "Roman Catholic",
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 12.5,
+        "osm_id": "433793228",
+        "last_updated": "2025/08/06 11:38:50+00"
+      }
+    },
+    {
+      "id": "a254400e36bf4b00ae3e446bb3c7e6cc",
+      "name": "Unnamed hospital",
+      "type": "hospital",
+      "location": {
+        "latitude": null,
+        "longitude": null,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 9.375,
+        "osm_id": "1122580433",
+        "last_updated": "2022/12/16 09:00:50+00"
+      }
+    },
+    {
+      "id": "3cdec178f45f4b98a85afe36b5995859",
+      "name": "Hospital Director's Office",
+      "type": "hospital",
+      "location": {
+        "latitude": -15.80185828,
+        "longitude": 35.02006625,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 12.5,
+        "osm_id": "6461643909",
+        "last_updated": "2019/05/09 12:07:49+00"
+      }
+    },
+    {
+      "id": "2e82ba34f65848a398cfab1b1788bd88",
+      "name": "Madina Islamic private Hospital",
+      "type": "hospital",
+      "location": {
+        "latitude": -15.77620404,
+        "longitude": 35.03853913,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 9.375,
+        "osm_id": "7780264585",
+        "last_updated": "2020/08/03 08:10:58+00"
+      }
+    },
+    {
+      "id": "cd0a8d0ef3dd4f11b2f5da46e968ed9c",
+      "name": "Unnamed hospital",
+      "type": "hospital",
+      "location": {
+        "latitude": null,
+        "longitude": null,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 9.375,
+        "osm_id": "886636414",
+        "last_updated": "2024/07/01 19:01:11+00"
+      }
+    },
+    {
+      "id": "35da6557d35c41df98eb012abd9fd650",
+      "name": "Kawale",
+      "type": "clinic",
+      "location": {
+        "latitude": -13.99206105,
+        "longitude": 33.79765209,
+        "city": "Lilongwe",
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": "operational",
+        "opening_hours": "24/7",
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": [
+          "maternity",
+          "dentist",
+          "internal",
+          "gynaecology"
+        ]
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": "public"
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": "grid"
+      },
+      "metadata": {
+        "completeness": 31.25,
+        "osm_id": "10267145109",
+        "last_updated": "2023/06/16 14:02:00+00"
+      }
+    },
+    {
+      "id": "f4c8e7ce4156490f8f929c218e9e7a64",
+      "name": "Surgery Hospital",
+      "type": "hospital",
+      "location": {
+        "latitude": null,
+        "longitude": null,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": "Dr. Chilemba",
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 12.5,
+        "osm_id": "317819938",
+        "last_updated": "2014/12/18 17:10:28+00"
+      }
+    },
+    {
+      "id": "40dd35cdda054941801c990367de51a1",
+      "name": "Ntaja Health Centre",
+      "type": "hospital",
+      "location": {
+        "latitude": null,
+        "longitude": null,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 9.375,
+        "osm_id": "450942921",
+        "last_updated": "2016/11/03 06:39:03+00"
+      }
+    },
+    {
+      "id": "5fa6312a2c9c408495624404a2402028",
+      "name": "Mzimba South District Hospital",
+      "type": "hospital",
+      "location": {
+        "latitude": null,
+        "longitude": null,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": "yes",
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 15.625,
+        "osm_id": "814118637",
+        "last_updated": "2020/06/09 09:33:13+00"
+      }
+    },
+    {
+      "id": "12947e1541794d4fb6d8bca821405e7e",
+      "name": "Comfort Community Hospital - OPD",
+      "type": "hospital",
+      "location": {
+        "latitude": null,
+        "longitude": null,
+        "city": "Balaka",
+        "address": "Nankhombe Street",
+        "postcode": null
+      },
+      "details": {
+        "operator": "Andiamo Youth Cooperative Trust",
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 21.875,
+        "osm_id": "479574281",
+        "last_updated": "2017/05/23 22:56:43+00"
+      }
+    },
+    {
+      "id": "5fb0ff4ffc72489bad363d361786e5ec",
+      "name": "Chuba Clinic",
+      "type": "clinic",
+      "location": {
+        "latitude": -9.65011995,
+        "longitude": 33.46491794,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 9.375,
+        "osm_id": "5674018523",
+        "last_updated": "2018/06/19 15:59:12+00"
+      }
+    },
+    {
+      "id": "5aacd726b7fa46c8aef1f06e379294d8",
+      "name": "Unnamed hospital",
+      "type": "hospital",
+      "location": {
+        "latitude": null,
+        "longitude": null,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 6.25,
+        "osm_id": "266274288",
+        "last_updated": "2018/12/03 14:13:11+00"
+      }
+    },
+    {
+      "id": "079e649dd0e84346a37c159317e9e186",
+      "name": "Nkhata District Hospital",
+      "type": "hospital",
+      "location": {
+        "latitude": null,
+        "longitude": null,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 12.5,
+        "osm_id": "343963186",
+        "last_updated": "2023/10/03 08:34:04+00"
+      }
+    },
+    {
+      "id": "6c70e98f2c564c9e83efc39fbd734e8c",
+      "name": "Mlambe Hospital",
+      "type": "hospital",
+      "location": {
+        "latitude": null,
+        "longitude": null,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 9.375,
+        "osm_id": "266254718",
+        "last_updated": "2014/03/15 02:36:43+00"
+      }
+    },
+    {
+      "id": "6d70f9033d4845738d16c5e2b586ddf1",
+      "name": "Family Dental Clinic",
+      "type": "dentist",
+      "location": {
+        "latitude": -13.95654357,
+        "longitude": 33.78460725,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": []
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 12.5,
+        "osm_id": "6456315491",
+        "last_updated": "2021/04/12 12:18:53+00"
+      }
+    },
+    {
+      "id": "65fe74e4a446416fa802790cf01c1f60",
+      "name": "Mangulenje Clinic",
+      "type": "clinic",
+      "location": {
+        "latitude": -16.22214937,
+        "longitude": 34.85465928,
+        "city": null,
+        "address": null,
+        "postcode": null
+      },
+      "details": {
+        "operator": null,
+        "operator_type": null,
+        "operational_status": null,
+        "opening_hours": null,
+        "beds": null,
+        "staff_doctors": null,
+        "staff_nurses": null,
+        "specialities": [
+          "general"
+        ]
+      },
+      "services": {
+        "dispensing": null,
+        "emergency": null,
+        "wheelchair": null,
+        "insurance": null
+      },
+      "infrastructure": {
+        "water_source": null,
+        "electricity": null
+      },
+      "metadata": {
+        "completeness": 15.625,
+        "osm_id": "6463828715",
+        "last_updated": "2022/07/21 18:11:43+00"
+      }
+    }
+  ]
+}

@@ -8,6 +8,7 @@ A data-driven resource allocation tool for equitable healthcare in Malawi. This 
 - **Coverage Statistics**: Real-time calculation of population coverage when clinics are added or removed
 - **Site Management**: Add new clinics by clicking on the map, or remove existing clinics
 - **Impact Visualization**: See how many people gain or lose coverage when making changes
+- **AI-Powered Clinic Analysis**: Get detailed location analysis including safety risks and medical desert assessment using OpenAI
 
 ## Getting Started
 
@@ -21,6 +22,18 @@ A data-driven resource allocation tool for equitable healthcare in Malawi. This 
 ```bash
 npm install
 ```
+
+### Environment Setup
+
+Create a `.env.local` file in the `frontend` directory with your OpenAI API key:
+
+```bash
+OPENAI_API_KEY=your_openai_api_key_here
+```
+
+You can get your API key from [OpenAI Platform](https://platform.openai.com/api-keys).
+
+**Note**: The clinic analysis feature requires a valid OpenAI API key. Without it, the analysis widget will show an error when attempting to analyze clinic locations.
 
 ### Running the Development Server
 
@@ -47,6 +60,12 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
    - Uncovered population
    - Coverage percentage
    - Change indicators when clinics are added/removed
+
+5. **Analyze Clinic Locations**: Click on any clinic marker on the map, then click "View Analysis" to get:
+   - Location overview and geographic context
+   - Safety risks assessment (accessibility, security, infrastructure)
+   - Medical desert analysis (pharmacy availability within 5km)
+   - Actionable recommendations for healthcare access improvement
 
 ## Technical Details
 
