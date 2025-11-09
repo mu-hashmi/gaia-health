@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Clinic } from '../types';
 import { calculateCoverage } from '../utils/coverage';
 
@@ -24,31 +24,34 @@ interface DistrictCoverage {
 export default function DistrictStats({ clinics, populationPoints, districts }: DistrictStatsProps) {
   const [isExpanded, setIsExpanded] = useState(true);
 
-  // Group clinics by district
-  const clinicsByDistrict = new Map<string, Clinic[]>();
-  clinics.forEach(clinic => {
-    if (clinic.district) {
-      const existing = clinicsByDistrict.get(clinic.district) || [];
-      clinicsByDistrict.set(clinic.district, [...existing, clinic]);
-    }
-  });
+  // Memoize expensive calculations - only recalculate when clinics or populationPoints change
+  const districtCoverages = useMemo(() => {
+    // Group clinics by district
+    const clinicsByDistrict = new Map<string, Clinic[]>();
+    clinics.forEach(clinic => {
+      if (clinic.district) {
+        const existing = clinicsByDistrict.get(clinic.district) || [];
+        clinicsByDistrict.set(clinic.district, [...existing, clinic]);
+      }
+    });
 
-  // Calculate coverage for each district
-  const districtCoverages: DistrictCoverage[] = Array.from(clinicsByDistrict.entries())
-    .map(([district, districtClinics]) => {
-      // Filter population points that belong to this district
-      // Note: This is a simplified approach. In a real implementation,
-      // you would use point-in-polygon to determine which points belong to which district
-      const districtPopulation = populationPoints; // For now, use all points
-      const coverage = calculateCoverage(districtClinics, districtPopulation);
-      
-      return {
-        district,
-        clinics: districtClinics,
-        coverage,
-      };
-    })
-    .sort((a, b) => b.coverage.coveragePercentage - a.coverage.coveragePercentage);
+    // Calculate coverage for each district
+    return Array.from(clinicsByDistrict.entries())
+      .map(([district, districtClinics]) => {
+        // Filter population points that belong to this district
+        // Note: This is a simplified approach. In a real implementation,
+        // you would use point-in-polygon to determine which points belong to which district
+        const districtPopulation = populationPoints; // For now, use all points
+        const coverage = calculateCoverage(districtClinics, districtPopulation);
+        
+        return {
+          district,
+          clinics: districtClinics,
+          coverage,
+        };
+      })
+      .sort((a, b) => b.coverage.coveragePercentage - a.coverage.coveragePercentage);
+  }, [clinics, populationPoints]);
 
   return (
     <div className="bg-white rounded-lg shadow-lg overflow-hidden">

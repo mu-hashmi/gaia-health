@@ -13,20 +13,49 @@ export function calculateDistance(lat1: number, lng1: number, lat2: number, lng2
   return R * c;
 }
 
-// Check if a population point is within 5km of any clinic
+// Fast approximation for distance check (uses bounding box)
+// Returns true if point might be within radius (for initial filtering)
+function isWithinBoundingBox(
+  pointLat: number,
+  pointLng: number,
+  clinicLat: number,
+  clinicLng: number,
+  radiusKm: number
+): boolean {
+  // Approximate: 1 degree latitude ≈ 111 km
+  // 1 degree longitude ≈ 111 km * cos(latitude)
+  const latRadius = radiusKm / 111;
+  const lngRadius = radiusKm / (111 * Math.cos(clinicLat * Math.PI / 180));
+  
+  return Math.abs(pointLat - clinicLat) <= latRadius && 
+         Math.abs(pointLng - clinicLng) <= lngRadius;
+}
+
+// Check if a population point is within radius of any clinic (optimized)
 function isPointCovered(
   pointLat: number,
   pointLng: number,
   clinics: Clinic[],
   coverageRadius: number = 5
 ): boolean {
-  return clinics.some(clinic => {
-    const distance = calculateDistance(pointLat, pointLng, clinic.lat, clinic.lng);
-    return distance <= coverageRadius;
-  });
+  // Fast path: if no clinics, point is not covered
+  if (clinics.length === 0) return false;
+  
+  // Use bounding box pre-filtering to avoid expensive Haversine calculations
+  for (const clinic of clinics) {
+    // First check if point is within bounding box (fast approximation)
+    if (isWithinBoundingBox(pointLat, pointLng, clinic.lat, clinic.lng, coverageRadius)) {
+      // Only do expensive Haversine calculation if within bounding box
+      const distance = calculateDistance(pointLat, pointLng, clinic.lat, clinic.lng);
+      if (distance <= coverageRadius) {
+        return true; // Early exit - found a clinic within range
+      }
+    }
+  }
+  return false;
 }
 
-// Calculate coverage statistics
+// Calculate coverage statistics (optimized)
 export function calculateCoverage(
   clinics: Clinic[],
   populationPoints: Array<{ lat: number; lng: number; population: number }>,
@@ -35,12 +64,26 @@ export function calculateCoverage(
   let totalPopulation = 0;
   let coveredPopulation = 0;
 
-  populationPoints.forEach(point => {
+  // Fast path: if no clinics, nothing is covered
+  if (clinics.length === 0) {
+    for (const point of populationPoints) {
+      totalPopulation += point.population;
+    }
+    return {
+      totalPopulation,
+      coveredPopulation: 0,
+      uncoveredPopulation: totalPopulation,
+      coveragePercentage: 0,
+    };
+  }
+
+  // Process points with optimized distance checks
+  for (const point of populationPoints) {
     totalPopulation += point.population;
     if (isPointCovered(point.lat, point.lng, clinics, coverageRadius)) {
       coveredPopulation += point.population;
     }
-  });
+  }
 
   const uncoveredPopulation = totalPopulation - coveredPopulation;
   const coveragePercentage = totalPopulation > 0 

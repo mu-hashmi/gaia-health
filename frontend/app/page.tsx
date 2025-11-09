@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import { Clinic, CoverageStats } from './types';
 import { calculateCoverage } from './utils/coverage';
@@ -94,26 +94,34 @@ export default function Home() {
     });
   };
 
-  const filteredCurrentClinics = getFilteredClinics(currentClinics);
-  const filteredHypotheticalClinics = getFilteredClinics(hypotheticalClinics);
+  // Memoize filtered clinics to avoid recalculating on every render
+  const filteredCurrentClinicsMemo = useMemo(() => {
+    return getFilteredClinics(currentClinics);
+  }, [currentClinics, selectedDistrict, selectedClinicTypes]);
+
+  const filteredHypotheticalClinicsMemo = useMemo(() => {
+    return getFilteredClinics(hypotheticalClinics);
+  }, [hypotheticalClinics, selectedDistrict, selectedClinicTypes]);
+
+  // Use memoized filtered clinics
+  const filteredCurrentClinics = filteredCurrentClinicsMemo;
+  const filteredHypotheticalClinics = filteredHypotheticalClinicsMemo;
 
   // Calculate coverage for current clinics (using filtered clinics)
   useEffect(() => {
     if (populationPoints.length > 0) {
-      const filtered = getFilteredClinics(currentClinics);
-      const stats = calculateCoverage(filtered, populationPoints);
+      const stats = calculateCoverage(filteredCurrentClinicsMemo, populationPoints);
       setCurrentStats(stats);
     }
-  }, [currentClinics, populationPoints, selectedDistrict, selectedClinicTypes]);
+  }, [filteredCurrentClinicsMemo, populationPoints]);
 
   // Calculate coverage for hypothetical clinics (using filtered clinics)
   useEffect(() => {
     if (populationPoints.length > 0) {
-      const filtered = getFilteredClinics(hypotheticalClinics);
-      const stats = calculateCoverage(filtered, populationPoints);
+      const stats = calculateCoverage(filteredHypotheticalClinicsMemo, populationPoints);
       setHypotheticalStats(stats);
     }
-  }, [hypotheticalClinics, populationPoints, selectedDistrict, selectedClinicTypes]);
+  }, [filteredHypotheticalClinicsMemo, populationPoints]);
 
   const handleRemoveClinic = (id: string) => {
     if (currentTab === 'current') {
@@ -405,6 +413,7 @@ export default function Home() {
           lng={clickedLocation.lng}
         />
       )}
+
     </div>
   );
 }

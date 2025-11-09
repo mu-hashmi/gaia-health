@@ -1,82 +1,152 @@
 'use client';
 
-import type { Feature, FeatureCollection, GeoJsonObject, Geometry } from 'geojson';
+import type { GeoJsonObject } from 'geojson';
 import L from 'leaflet';
-import { useEffect, useState } from 'react';
-import { GeoJSON } from 'react-leaflet';
+import { useEffect, useRef, useState } from 'react';
+import { GeoJSON, useMap } from 'react-leaflet';
+import { Clinic } from '../types';
+import { calculateDistrictStats } from '../utils/districtStats';
 
 interface DistrictBoundariesProps {
   selectedDistrict?: string;
+  clinics: Clinic[];
+  populationPoints: Array<{ lat: number; lng: number; population: number }>;
 }
 
-export default function DistrictBoundaries({ selectedDistrict }: DistrictBoundariesProps) {
+export default function DistrictBoundaries({ 
+  selectedDistrict,
+  clinics,
+  populationPoints,
+}: DistrictBoundariesProps) {
   const [geoJsonData, setGeoJsonData] = useState<GeoJsonObject | null>(null);
+  const hoverTimeoutRef = useRef<Map<string, NodeJS.Timeout>>(new Map());
+  const popupRef = useRef<Map<string, L.Popup>>(new Map());
+  const map = useMap();
 
   useEffect(() => {
-    async function loadBoundaries() {
-      try {
-        const response = await fetch('/api/districts/boundaries');
-        if (response.ok) {
-          const data = await response.json();
-          setGeoJsonData(data as GeoJsonObject);
-        }
-      } catch (error) {
-        console.error('Error loading district boundaries:', error);
-      }
-    }
-
-    loadBoundaries();
+    // Load GeoJSON data
+    fetch('/api/districts/geojson')
+      .then(res => res.json())
+      .then(data => setGeoJsonData(data as GeoJsonObject))
+      .catch(err => console.error('Error loading district boundaries:', err));
   }, []);
 
-  if (!geoJsonData || geoJsonData.type !== 'FeatureCollection') {
+  if (!geoJsonData) {
     return null;
   }
 
   // Style function for districts
-  const getStyle = (feature?: Feature<Geometry, { NAME_1?: string; [key: string]: unknown }>) => {
-    if (!feature || !feature.properties) {
-      return {
-        fillColor: '#e5e7eb',
-        fillOpacity: 0.1,
-        color: '#6b7280',
-        weight: 1.5,
-        opacity: 0.6,
-      };
-    }
-
-    const districtName = feature.properties.NAME_1;
-    const isSelected = selectedDistrict && districtName === selectedDistrict;
-
+  const getDistrictStyle = (feature?: { properties?: { NAME_1?: string } }) => {
+    const districtName = feature?.properties?.NAME_1;
+    const isSelected = selectedDistrict === districtName;
     return {
       fillColor: isSelected ? '#3b82f6' : '#e5e7eb',
       fillOpacity: isSelected ? 0.3 : 0.1,
       color: isSelected ? '#2563eb' : '#6b7280',
       weight: isSelected ? 3 : 1.5,
-      opacity: isSelected ? 1 : 0.6,
+      opacity: isSelected ? 0.8 : 0.6,
     };
   };
 
-  const onEachFeature = (feature: Feature<Geometry, { NAME_1?: string; [key: string]: unknown }>, layer: L.Layer) => {
-    const districtName = feature.properties?.NAME_1 || 'Unknown';
-    
-    layer.bindTooltip(districtName, {
-      permanent: false,
-      direction: 'center',
-      className: 'district-tooltip',
-    });
+  // Handle district hover and click
+  const handleEachFeature = (feature: { properties?: { NAME_1?: string }; geometry?: unknown }, layer: L.Layer) => {
+    const districtName = feature?.properties?.NAME_1;
+    if (!districtName) return;
+
+    const pathLayer = layer as L.Path;
 
     layer.on({
-      mouseover: (e) => {
-        const targetLayer = e.target;
-        targetLayer.setStyle({
+      // Don't handle click - let it pass through to map click handler
+      mouseover: () => {
+        pathLayer.setStyle({
           fillOpacity: 0.4,
           weight: 2.5,
         });
+
+        // Set up delayed popup after 1 second
+        const timeoutId = setTimeout(() => {
+          // Calculate stats once
+          const stats = calculateDistrictStats(districtName, clinics, populationPoints);
+
+          // Calculate center of the feature for popup placement
+          // Try to get bounds from the layer, fallback to feature center if available
+          let center: L.LatLng;
+          if ('getBounds' in pathLayer && typeof pathLayer.getBounds === 'function') {
+            const bounds = pathLayer.getBounds();
+            center = bounds.getCenter();
+          } else {
+            // Fallback: use a default center point (Malawi center)
+            center = L.latLng(-13.25, 34.3);
+          }
+
+          // Create popup content
+          const popupContent = document.createElement('div');
+          popupContent.innerHTML = `
+            <div class="p-2 min-w-[200px]">
+              <h3 class="font-bold text-black mb-2">${districtName} District</h3>
+              <div class="space-y-1 text-sm">
+                <div class="flex justify-between">
+                  <span class="text-gray-600">Coverage:</span>
+                  <span class="font-semibold">${stats.coverage.coveragePercentage.toFixed(1)}%</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-600">Clinics:</span>
+                  <span class="font-semibold">${stats.clinics.length}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-600">GAIA:</span>
+                  <span class="font-semibold text-green-700">${stats.clinicsByType.gaia.length}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-600">Govt:</span>
+                  <span class="font-semibold text-blue-700">${stats.clinicsByType.govt.length}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-600">CHAM:</span>
+                  <span class="font-semibold text-purple-700">${stats.clinicsByType.cham.length}</span>
+                </div>
+                <div class="border-t pt-1 mt-1">
+                  <div class="flex justify-between">
+                    <span class="text-gray-600">Covered Pop:</span>
+                    <span class="font-semibold text-green-700">${stats.coverage.coveredPopulation.toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+
+          const popup = L.popup({
+            className: 'district-stats-popup',
+            closeButton: true,
+            autoPan: false,
+          })
+            .setLatLng(center)
+            .setContent(popupContent)
+            .openOn(map);
+
+          popupRef.current.set(districtName, popup);
+        }, 1000); // 1 second delay
+
+        hoverTimeoutRef.current.set(districtName, timeoutId);
       },
-      mouseout: (e) => {
-        const targetLayer = e.target;
-        const isSelected = selectedDistrict && feature.properties?.NAME_1 === selectedDistrict;
-        targetLayer.setStyle({
+      mouseout: () => {
+        // Clear timeout if mouse leaves before 1 second
+        const timeoutId = hoverTimeoutRef.current.get(districtName);
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+          hoverTimeoutRef.current.delete(districtName);
+        }
+
+        // Close popup if open
+        const popup = popupRef.current.get(districtName);
+        if (popup) {
+          map.closePopup(popup);
+          popupRef.current.delete(districtName);
+        }
+
+        // Reset style
+        const isSelected = selectedDistrict === districtName;
+        pathLayer.setStyle({
           fillOpacity: isSelected ? 0.3 : 0.1,
           weight: isSelected ? 3 : 1.5,
         });
@@ -84,48 +154,11 @@ export default function DistrictBoundaries({ selectedDistrict }: DistrictBoundar
     });
   };
 
-  // Filter features for mask layer
-  const getMaskFeatures = (): Feature<Geometry, { NAME_1?: string; _isMask?: boolean; [key: string]: unknown }>[] => {
-    if (!selectedDistrict || geoJsonData.type !== 'FeatureCollection') {
-      return [];
-    }
-
-    const featureCollection = geoJsonData as FeatureCollection<Geometry, { NAME_1?: string; [key: string]: unknown }>;
-    return featureCollection.features
-      .filter((f) => f.properties && f.properties.NAME_1 !== selectedDistrict)
-      .map((f) => ({
-        ...f,
-        properties: {
-          ...f.properties,
-          _isMask: true,
-        },
-      }));
-  };
-
   return (
-    <>
-      {/* Render all district boundaries */}
-      <GeoJSON
-        data={geoJsonData}
-        style={getStyle}
-        onEachFeature={onEachFeature}
-      />
-      
-      {/* Darken non-selected areas using a semi-transparent overlay */}
-      {selectedDistrict && geoJsonData.type === 'FeatureCollection' && (
-        <GeoJSON
-          data={{
-            type: 'FeatureCollection',
-            features: getMaskFeatures(),
-          } as FeatureCollection<Geometry, { NAME_1?: string; _isMask?: boolean; [key: string]: unknown }>}
-          style={{
-            fillColor: '#000000',
-            fillOpacity: 0.3,
-            color: 'transparent',
-            weight: 0,
-          }}
-        />
-      )}
-    </>
+    <GeoJSON
+      data={geoJsonData}
+      style={getDistrictStyle}
+      onEachFeature={handleEachFeature}
+    />
   );
 }

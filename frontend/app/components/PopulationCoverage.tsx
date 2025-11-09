@@ -1,8 +1,37 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Clinic } from '../types';
 import { calculateDistance } from '../utils/coverage';
+
+// Fast bounding box check to avoid expensive Haversine calculations
+function isWithinBoundingBox(
+  pointLat: number,
+  pointLng: number,
+  clinicLat: number,
+  clinicLng: number,
+  radiusKm: number
+): boolean {
+  const latRadius = radiusKm / 111;
+  const lngRadius = radiusKm / (111 * Math.cos(clinicLat * Math.PI / 180));
+  return Math.abs(pointLat - clinicLat) <= latRadius && 
+         Math.abs(pointLng - clinicLng) <= lngRadius;
+}
+
+// Optimized check if point is covered by clinic
+function isPointCoveredByClinic(
+  pointLat: number,
+  pointLng: number,
+  clinicLat: number,
+  clinicLng: number,
+  radiusKm: number
+): boolean {
+  if (isWithinBoundingBox(pointLat, pointLng, clinicLat, clinicLng, radiusKm)) {
+    const distance = calculateDistance(pointLat, pointLng, clinicLat, clinicLng);
+    return distance <= radiusKm;
+  }
+  return false;
+}
 
 interface PopulationCoverageProps {
   clinics: Clinic[];
@@ -22,76 +51,90 @@ export default function PopulationCoverage({
 }: PopulationCoverageProps) {
   const [isExpanded, setIsExpanded] = useState(true);
 
-  // Calculate unique coverage per clinic type (no double counting)
-  const calculateUniqueCoverageByType = (type: Clinic['type']) => {
-    const typeClinics = clinics.filter(c => c.type === type);
-    const coveredPoints = new Set<string>();
-    let totalPopulation = 0;
+  // Memoize all expensive calculations - only recalculate when clinics or populationPoints change
+  const { clinicCoverages, totals } = useMemo(() => {
+    // Calculate unique coverage per clinic type (no double counting) - optimized
+    const calculateUniqueCoverageByType = (type: Clinic['type']) => {
+      const typeClinics = clinics.filter(c => c.type === type);
+      if (typeClinics.length === 0) return 0;
+      
+      const coveredPoints = new Set<string>();
+      let totalPopulation = 0;
 
-    populationPoints.forEach(point => {
-      // Check if this point is covered by any clinic of this type
-      const isCovered = typeClinics.some(clinic => {
-        const distance = calculateDistance(point.lat, point.lng, clinic.lat, clinic.lng);
-        return distance <= coverageRadius;
-      });
+      for (const point of populationPoints) {
+        // Check if this point is covered by any clinic of this type
+        let isCovered = false;
+        for (const clinic of typeClinics) {
+          if (isPointCoveredByClinic(point.lat, point.lng, clinic.lat, clinic.lng, coverageRadius)) {
+            isCovered = true;
+            break; // Early exit
+          }
+        }
 
-      if (isCovered) {
-        // Use lat,lng as unique identifier to avoid double counting
-        const pointKey = `${point.lat},${point.lng}`;
-        if (!coveredPoints.has(pointKey)) {
-          coveredPoints.add(pointKey);
-          totalPopulation += point.population;
+        if (isCovered) {
+          // Use lat,lng as unique identifier to avoid double counting
+          const pointKey = `${point.lat},${point.lng}`;
+          if (!coveredPoints.has(pointKey)) {
+            coveredPoints.add(pointKey);
+            totalPopulation += point.population;
+          }
         }
       }
-    });
 
-    return totalPopulation;
-  };
+      return totalPopulation;
+    };
 
-  // Calculate unique coverage for grand total (no double counting across all clinics)
-  const calculateUniqueCoverageTotal = () => {
-    const coveredPoints = new Set<string>();
-    let totalPopulation = 0;
+    // Calculate unique coverage for grand total (no double counting across all clinics) - optimized
+    const calculateUniqueCoverageTotal = () => {
+      if (clinics.length === 0) return 0;
+      
+      const coveredPoints = new Set<string>();
+      let totalPopulation = 0;
 
-    populationPoints.forEach(point => {
-      // Check if this point is covered by any clinic
-      const isCovered = clinics.some(clinic => {
-        const distance = calculateDistance(point.lat, point.lng, clinic.lat, clinic.lng);
-        return distance <= coverageRadius;
-      });
+      for (const point of populationPoints) {
+        // Check if this point is covered by any clinic
+        let isCovered = false;
+        for (const clinic of clinics) {
+          if (isPointCoveredByClinic(point.lat, point.lng, clinic.lat, clinic.lng, coverageRadius)) {
+            isCovered = true;
+            break; // Early exit
+          }
+        }
 
-      if (isCovered) {
-        const pointKey = `${point.lat},${point.lng}`;
-        if (!coveredPoints.has(pointKey)) {
-          coveredPoints.add(pointKey);
-          totalPopulation += point.population;
+        if (isCovered) {
+          const pointKey = `${point.lat},${point.lng}`;
+          if (!coveredPoints.has(pointKey)) {
+            coveredPoints.add(pointKey);
+            totalPopulation += point.population;
+          }
         }
       }
-    });
 
-    return totalPopulation;
-  };
+      return totalPopulation;
+    };
 
-  // Calculate population covered by each clinic individually
-  // This shows the population within each clinic's radius (may overlap with others)
-  const clinicCoverages: ClinicCoverage[] = clinics.map(clinic => {
-    let population = 0;
-    populationPoints.forEach(point => {
-      const distance = calculateDistance(point.lat, point.lng, clinic.lat, clinic.lng);
-      if (distance <= coverageRadius) {
-        population += point.population;
+    // Calculate population covered by each clinic individually - optimized
+    // This shows the population within each clinic's radius (may overlap with others)
+    const clinicCoverages: ClinicCoverage[] = clinics.map(clinic => {
+      let population = 0;
+      for (const point of populationPoints) {
+        if (isPointCoveredByClinic(point.lat, point.lng, clinic.lat, clinic.lng, coverageRadius)) {
+          population += point.population;
+        }
       }
+      return { clinic, population };
     });
-    return { clinic, population };
-  });
 
-  // Calculate unique totals (no double counting)
-  const totals = {
-    gaia: calculateUniqueCoverageByType('gaia'),
-    govt: calculateUniqueCoverageByType('govt'),
-    cham: calculateUniqueCoverageByType('cham'),
-    total: calculateUniqueCoverageTotal(),
-  };
+    // Calculate unique totals (no double counting)
+    const totals = {
+      gaia: calculateUniqueCoverageByType('gaia'),
+      govt: calculateUniqueCoverageByType('govt'),
+      cham: calculateUniqueCoverageByType('cham'),
+      total: calculateUniqueCoverageTotal(),
+    };
+
+    return { clinicCoverages, totals };
+  }, [clinics, populationPoints, coverageRadius]);
 
   const getClinicTypeColor = (type: Clinic['type']) => {
     switch (type) {
