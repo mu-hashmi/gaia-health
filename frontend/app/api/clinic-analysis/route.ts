@@ -15,19 +15,38 @@ export async function POST(request: NextRequest) {
         'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-4',
         messages: [
           {
             role: 'system',
-            content: 'You are a healthcare analyst for Malawi. Provide concise analysis in exactly 2 lines or less. If no information available, respond with N/A.',
+            content: `You are a specialized healthcare and security analyst focused on Malawi's healthcare landscape.
+You have deep knowledge of:
+- Malawi's regional security situations, conflict zones, gang activity, and crime hotspots
+- HIV/AIDS prevalence rates across Malawi's regions and districts
+- Pharmaceutical availability and drug shortage patterns in Malawi
+- Healthcare access disparities across different geographic areas
+
+Provide accurate, specific information based on real data about Malawi. Do not provide generic or placeholder responses.
+Format your response with clear sections and include specific details about the area.`,
           },
           {
             role: 'user',
-            content: `Analyze the clinic in Malawi. Provide 2 lines max for each metric. LOCAL DANGER: security risks (conflict, gang violence, crime). MEDICATION PROBLEMS: major pharmaceutical issues (HIV rates, drug shortages). If no info available, respond with N/A.`,
+            content: `Provide a detailed analysis for this specific clinic in Malawi:
+
+CLINIC NAME: ${clinic.name}
+CLINIC TYPE: ${clinic.type}
+COORDINATES: Latitude ${clinic.lat.toFixed(4)}, Longitude ${clinic.lng.toFixed(4)}
+
+Analyze this specific location and provide detailed responses for:
+
+1. LOCAL DANGER: What are the documented security risks, conflict zones, gang activity, and crime patterns specifically in this geographic area around the clinic's coordinates? Include any recent incidents or known danger zones within 10-20km of this location.
+
+2. MAJOR MEDICATION PROBLEMS: What are the specific pharmaceutical challenges in this region? Include information about HIV prevalence rates, endemic diseases, drug availability issues, and any medication shortages that specifically affect this area.
+
+Provide maximum detail and real, specific information for this location. If information is limited for this specific area, provide regional context. Do not provide generic responses.`,
           },
         ],
         temperature: 0.7,
-        max_tokens: 200,
       }),
     });
 
@@ -43,10 +62,15 @@ export async function POST(request: NextRequest) {
     const data = await response.json();
     const analysisText = data.choices[0].message.content;
 
+    // Parse the response more flexibly to handle varied formatting
     const localDangerMatch = analysisText.match(
-      /LOCAL DANGER:\s*(.+?)(?=MEDICATION PROBLEMS:|$)/s
+      /LOCAL DANGER[:\s]*(.+?)(?=MAJOR MEDICATION PROBLEMS|MEDICATION PROBLEMS|$)/i
     );
-    const medicationMatch = analysisText.match(/MEDICATION PROBLEMS:\s*(.+?)$/s);
+    const medicationMatch = analysisText.match(
+      /MAJOR MEDICATION PROBLEMS[:\s]*(.+?)$/i
+    ) || analysisText.match(
+      /MEDICATION PROBLEMS[:\s]*(.+?)$/i
+    );
 
     const localDanger = localDangerMatch?.[1]?.trim() || 'N/A';
     const medicationProblems = medicationMatch?.[1]?.trim() || 'N/A';
@@ -57,8 +81,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       clinic: clinic.name,
-      localDanger: localDanger.slice(0, 150),
-      medicationProblems: medicationProblems.slice(0, 150),
+      clinicCoordinates: { lat: clinic.lat, lng: clinic.lng },
+      localDanger,
+      medicationProblems,
       medicalDesert,
     });
   } catch (error) {
