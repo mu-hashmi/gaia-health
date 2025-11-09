@@ -15,35 +15,44 @@ export async function POST(request: NextRequest) {
         'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: 'gpt-4',
+        model: 'gpt-4-turbo',
         messages: [
           {
             role: 'system',
-            content: `You are a specialized healthcare and security analyst focused on Malawi's healthcare landscape.
-You have deep knowledge of:
-- Malawi's regional security situations, conflict zones, gang activity, and crime hotspots
-- HIV/AIDS prevalence rates across Malawi's regions and districts
-- Pharmaceutical availability and drug shortage patterns in Malawi
-- Healthcare access disparities across different geographic areas
+            content: `You are a healthcare research specialist with access to current data on Malawi's pharmaceutical landscape and healthcare challenges.
+Your task is to research and provide detailed, factual information about medication problems and healthcare challenges in Malawi.
 
-Provide accurate, specific information based on real data about Malawi. Do not provide generic or placeholder responses.
-Format your response with clear sections and include specific details about the area.`,
+Focus on:
+- Current HIV/AIDS prevalence rates and antiretroviral drug availability in different regions
+- Endemic diseases and their treatment medication availability (malaria, TB, etc.)
+- Drug shortages and pharmaceutical supply chain issues in Malawi
+- Maternal and child health medication access
+- Healthcare access disparities across geographic areas
+
+Use your knowledge of current healthcare data and research to provide specific, evidence-based responses.
+Format your response with clear sections and cite the specific health challenges.`,
           },
           {
             role: 'user',
-            content: `Provide a detailed analysis for this specific clinic in Malawi:
+            content: `Research and provide detailed information about medication and pharmaceutical challenges for this specific location in Malawi:
 
 CLINIC NAME: ${clinic.name}
 CLINIC TYPE: ${clinic.type}
 COORDINATES: Latitude ${clinic.lat.toFixed(4)}, Longitude ${clinic.lng.toFixed(4)}
 
-Analyze this specific location and provide detailed responses for:
+Perform deep research and provide:
 
-1. LOCAL DANGER: What are the documented security risks, conflict zones, gang activity, and crime patterns specifically in this geographic area around the clinic's coordinates? Include any recent incidents or known danger zones within 10-20km of this location.
+1. LOCAL DANGER: High Risk (Placeholder - all healthcare facilities in Malawi are considered high-risk environments)
 
-2. MAJOR MEDICATION PROBLEMS: What are the specific pharmaceutical challenges in this region? Include information about HIV prevalence rates, endemic diseases, drug availability issues, and any medication shortages that specifically affect this area.
+2. MAJOR MEDICATION PROBLEMS: Based on current research and data, what are the specific pharmaceutical and medication challenges in Malawi? Include:
+   - HIV/AIDS treatment medication availability and antiretroviral drug access
+   - Malaria and tuberculosis medication supply status
+   - Maternal and child health medication shortages
+   - Any region-specific pharmaceutical challenges
+   - Drug pricing and accessibility issues
+   - Current health crises or medication emergencies
 
-Provide maximum detail and real, specific information for this location. If information is limited for this specific area, provide regional context. Do not provide generic responses.`,
+Provide detailed, research-backed information. Use your knowledge of Malawi's healthcare system, published health data, and current pharmaceutical supply information.`,
           },
         ],
         temperature: 0.7,
@@ -62,18 +71,17 @@ Provide maximum detail and real, specific information for this location. If info
     const data = await response.json();
     const analysisText = data.choices[0].message.content;
 
-    // Parse the response more flexibly to handle varied formatting
-    const localDangerMatch = analysisText.match(
-      /LOCAL DANGER[:\s]*(.+?)(?=MAJOR MEDICATION PROBLEMS|MEDICATION PROBLEMS|$)/i
-    );
+    // Local Danger is placeholder
+    const localDanger = 'High Risk';
+
+    // Parse medication problems from the response
     const medicationMatch = analysisText.match(
       /MAJOR MEDICATION PROBLEMS[:\s]*(.+?)$/i
     ) || analysisText.match(
-      /MEDICATION PROBLEMS[:\s]*(.+?)$/i
+      /2\.\s*MAJOR MEDICATION PROBLEMS[:\s]*(.+?)$/i
     );
 
-    const localDanger = localDangerMatch?.[1]?.trim() || 'N/A';
-    const medicationProblems = medicationMatch?.[1]?.trim() || 'N/A';
+    const medicationProblems = medicationMatch?.[1]?.trim() || analysisText;
 
     const medicalDesert = isMedicalDesert
       ? 'Yes - No pharmacy within 5km'
