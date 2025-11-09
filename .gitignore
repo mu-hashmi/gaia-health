@@ -51,3 +51,7 @@ yarn-error.log*
 
 # OS
 Thumbs.db
+
+# Large data files (too big for GitHub)
+*.pbf
+*.osm.pbf
