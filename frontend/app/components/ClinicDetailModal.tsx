@@ -9,6 +9,7 @@ interface ClinicDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
   onRemove: (id: string) => void;
+  onViewDetailedAnalysis?: (clinic: Clinic) => void;
   populationPoints: Array<{ lat: number; lng: number; population: number }>;
 }
 
@@ -33,6 +34,7 @@ export default function ClinicDetailModal({
   isOpen,
   onClose,
   onRemove,
+  onViewDetailedAnalysis,
   populationPoints,
 }: ClinicDetailModalProps) {
   // Calculate population served by this clinic
@@ -152,8 +154,18 @@ export default function ClinicDetailModal({
           </div>
 
           {/* Actions */}
-          <div className="pt-4 border-t">
+          <div className="pt-4 border-t space-y-2">
+            {onViewDetailedAnalysis && (
+              <button
+                type="button"
+                onClick={() => onViewDetailedAnalysis(clinic)}
+                className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+              >
+                Detailed Analysis
+              </button>
+            )}
             <button
+              type="button"
               onClick={handleRemove}
               className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium"
             >

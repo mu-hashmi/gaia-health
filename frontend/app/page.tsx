@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import dynamic from 'next/dynamic';
+import { useRouter } from 'next/navigation';
 import { Clinic, CoverageStats, Village } from './types';
 import { calculateCoverage } from './utils/coverage';
 import { generateRecommendations, RecommendedLocation } from './utils/recommendations';
@@ -30,6 +31,7 @@ interface PopulationPoint {
 }
 
 export default function Home() {
+  const router = useRouter();
   const [currentTab, setCurrentTab] = useState<TabType>('current');
   const [currentClinics, setCurrentClinics] = useState<Clinic[]>([]);
   const [hypotheticalClinics, setHypotheticalClinics] = useState<Clinic[]>([]);
@@ -351,6 +353,11 @@ export default function Home() {
     }
   };
 
+  const handleViewDetailedAnalysis = (clinic: Clinic) => {
+    const clinicJson = encodeURIComponent(JSON.stringify(clinic));
+    router.push(`/clinic-detailed-analysis?clinic=${clinicJson}`);
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
       <header className="bg-white shadow-sm border-b">
@@ -607,6 +614,7 @@ export default function Home() {
         isOpen={selectedClinicDetail !== null}
         onClose={() => setSelectedClinicDetail(null)}
         onRemove={handleRemoveClinic}
+        onViewDetailedAnalysis={handleViewDetailedAnalysis}
         populationPoints={filteredPopulationPoints}
       />
 
