@@ -1,11 +1,5 @@
 'use client';
 
-<<<<<<< HEAD
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { MapContainer, TileLayer, Circle, Marker, Popup, useMap } from 'react-leaflet';
-=======
->>>>>>> 90037309d8d1fa8c058166ba8860e79a5d1ab06b
 import L from 'leaflet';
 import { useEffect } from 'react';
 import { Circle, MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
@@ -31,11 +25,8 @@ interface MapProps {
   showHeatmap?: boolean;
   recommendedLocations?: Array<{ lat: number; lng: number; score: number; uncoveredPopulation: number }>;
   selectedDistrict?: string;
-<<<<<<< HEAD
   lowCoverageClinicIds?: Set<string>;
-=======
   onRecommendedClick?: (rec: { lat: number; lng: number; score: number; uncoveredPopulation: number }) => void;
->>>>>>> 90037309d8d1fa8c058166ba8860e79a5d1ab06b
 }
 
 function MapUpdater() {
@@ -90,28 +81,18 @@ function MapClickHandler({ onMapClick, disabled }: { onMapClick?: (lat: number, 
   return null;
 }
 
-<<<<<<< HEAD
 export default function Map({
   clinics,
   onMapClick,
-=======
-export default function Map({ 
-  clinics, 
-  onMapClick,
   onClinicClick,
->>>>>>> 90037309d8d1fa8c058166ba8860e79a5d1ab06b
   disableInteractions = false,
   populationPoints = [],
   showHeatmap = false,
   recommendedLocations = [],
   selectedDistrict,
-<<<<<<< HEAD
   lowCoverageClinicIds = new Set(),
-=======
   onRecommendedClick,
->>>>>>> 90037309d8d1fa8c058166ba8860e79a5d1ab06b
 }: MapProps) {
-  const router = useRouter();
 
   const getClinicColor = (type: Clinic['type']) => {
     // GAIA clinics = green, all others = gray
@@ -208,8 +189,14 @@ export default function Map({
             )}
             <Marker
               position={[clinic.lat, clinic.lng]}
-<<<<<<< HEAD
               icon={isLowCoverage ? getLowCoverageIcon(clinic.type) : getClinicIcon(clinic.type)}
+              eventHandlers={{
+                click: () => {
+                  if (onClinicClick) {
+                    onClinicClick(clinic);
+                  }
+                },
+              }}
             >
               <Popup>
                 <div className="p-3 min-w-[260px]">
@@ -218,37 +205,9 @@ export default function Map({
                   {clinic.district && (
                     <p className="text-sm text-gray-600 mb-3">District: {clinic.district}</p>
                   )}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      router.push(`/clinic/${clinic.id}`);
-                      // Close the popup after clicking
-                      const popup = document.querySelector('.leaflet-popup');
-                      if (popup) {
-                        const closeButton = popup.querySelector('.leaflet-popup-close-button') as HTMLElement;
-                        if (closeButton) {
-                          closeButton.click();
-                        }
-                      }
-                    }}
-                    className="w-full px-3 py-2 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700 transition-colors"
-                  >
-                    View Analysis
-                  </button>
                 </div>
               </Popup>
             </Marker>
-=======
-              icon={getClinicIcon(clinic.type)}
-              eventHandlers={{
-                click: () => {
-                  if (onClinicClick) {
-                    onClinicClick(clinic);
-                  }
-                },
-              }}
-            />
->>>>>>> 90037309d8d1fa8c058166ba8860e79a5d1ab06b
           </div>
         );
         })}
@@ -280,6 +239,7 @@ export default function Map({
                   </p>
                   {onRecommendedClick && (
                     <button
+                      type="button"
                       onClick={() => onRecommendedClick(rec)}
                       className="mt-2 w-full px-3 py-1.5 bg-amber-600 text-white rounded hover:bg-amber-700 text-sm font-medium"
                     >

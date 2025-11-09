@@ -5,12 +5,9 @@ import dynamic from 'next/dynamic';
 import { Clinic, CoverageStats, Village } from './types';
 import { calculateCoverage } from './utils/coverage';
 import { generateRecommendations, RecommendedLocation } from './utils/recommendations';
-<<<<<<< HEAD
 import { getLowCoverageClinicIds, LowCoverageClinic, analyzeDistrictClinics } from './utils/districtOptimization';
-=======
 import { calculateRemovalImpact, recommendGAIAHCLocations, GAIARecommendation } from './utils/villageAnalysis';
 import { filterPopulationByDistricts } from './utils/districtStats';
->>>>>>> 90037309d8d1fa8c058166ba8860e79a5d1ab06b
 import CoverageStatsComponent from './components/CoverageStats';
 import ClinicList from './components/ClinicList';
 import AddClinicModal from './components/AddClinicModal';
@@ -49,19 +46,18 @@ export default function Home() {
   const [selectedClinicTypes, setSelectedClinicTypes] = useState<Set<Clinic['type']>>(new Set(['gaia', 'govt', 'healthcentre', 'other']));
   const [showOnlyTargetDistricts, setShowOnlyTargetDistricts] = useState<boolean>(true);
   const [districts, setDistricts] = useState<Array<{ name: string; id: number }>>([]);
-<<<<<<< HEAD
+  // District Optimization Feature
   const [optimizationDistrict, setOptimizationDistrict] = useState<string>('');
   const [lowCoverageClinics, setLowCoverageClinics] = useState<Set<string>>(new Set());
   const [districtAnalysis, setDistrictAnalysis] = useState<LowCoverageClinic[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-=======
+  // LLM Call Feature
   const [villages, setVillages] = useState<Village[]>([]);
   const [selectedClinic, setSelectedClinic] = useState<Clinic | null>(null);
   const [selectedClinicDetail, setSelectedClinicDetail] = useState<Clinic | null>(null);
   const [impactAnalysis, setImpactAnalysis] = useState<ReturnType<typeof calculateRemovalImpact> | null>(null);
   const [gaiaRecommendations, setGaiaRecommendations] = useState<GAIARecommendation[]>([]);
   const [geoJsonData, setGeoJsonData] = useState<any>(null);
->>>>>>> 90037309d8d1fa8c058166ba8860e79a5d1ab06b
 
   // Load real data on mount
   useEffect(() => {
@@ -238,7 +234,7 @@ export default function Home() {
     setSelectedClinicTypes(newSet);
   };
 
-<<<<<<< HEAD
+  // District Optimization Handler
   const handleAnalyzeDistrictClinics = () => {
     if (!optimizationDistrict || populationPoints.length === 0) {
       alert('Please select a district to analyze');
@@ -278,7 +274,9 @@ export default function Home() {
     setOptimizationDistrict('');
     setLowCoverageClinics(new Set());
     setDistrictAnalysis([]);
-=======
+  };
+
+  // LLM Call Feature Handlers
   const handleCategoryToggle = (category: 'gaia' | 'allOthers') => {
     const newSet = new Set(selectedClinicTypes);
     if (category === 'gaia') {
@@ -351,7 +349,6 @@ export default function Home() {
     } else {
       setHypotheticalClinics([...hypotheticalClinics, newClinic]);
     }
->>>>>>> 90037309d8d1fa8c058166ba8860e79a5d1ab06b
   };
 
   return (
@@ -522,19 +519,8 @@ export default function Home() {
                     </div>
                   </div>
                 ) : (
-<<<<<<< HEAD
                   <Map
                     clinics={currentTab === 'current' ? filteredCurrentClinics : filteredHypotheticalClinics}
-                    onMapClick={handleMapClick}
-                    disableInteractions={isModalOpen}
-                    populationPoints={populationPoints}
-                    showHeatmap={showHeatmap}
-                    recommendedLocations={recommendations}
-                    selectedDistrict={selectedDistrict}
-                    lowCoverageClinicIds={lowCoverageClinics}
-=======
-                  <Map 
-                    clinics={currentTab === 'current' ? filteredCurrentClinics : filteredHypotheticalClinics} 
                     onMapClick={handleMapClick}
                     onClinicClick={(clinic) => setSelectedClinicDetail(clinic)}
                     disableInteractions={isModalOpen || selectedClinicDetail !== null}
@@ -542,8 +528,8 @@ export default function Home() {
                     showHeatmap={showHeatmap}
                     recommendedLocations={recommendations}
                     selectedDistrict={selectedDistrict}
+                    lowCoverageClinicIds={lowCoverageClinics}
                     onRecommendedClick={handleAddRecommended}
->>>>>>> 90037309d8d1fa8c058166ba8860e79a5d1ab06b
                   />
                 )}
               </div>
