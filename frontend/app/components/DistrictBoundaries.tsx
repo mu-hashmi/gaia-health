@@ -26,9 +26,17 @@ export default function DistrictBoundaries({
   useEffect(() => {
     // Load GeoJSON data
     fetch('/api/districts/geojson')
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`Failed to load district boundaries: ${res.status} ${res.statusText}`);
+        }
+        return res.json();
+      })
       .then(data => setGeoJsonData(data as GeoJsonObject))
-      .catch(err => console.error('Error loading district boundaries:', err));
+      .catch(err => {
+        console.error('Error loading district boundaries:', err);
+        // Optionally set an error state or show a user-friendly message
+      });
   }, []);
 
   if (!geoJsonData) {
@@ -102,8 +110,12 @@ export default function DistrictBoundaries({
                   <span class="font-semibold text-blue-700">${stats.clinicsByType.govt.length}</span>
                 </div>
                 <div class="flex justify-between">
-                  <span class="text-gray-600">CHAM:</span>
-                  <span class="font-semibold text-purple-700">${stats.clinicsByType.cham.length}</span>
+                  <span class="text-gray-600">Health Centre:</span>
+                  <span class="font-semibold text-orange-700">${stats.clinicsByType.healthcentre.length}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-600">Other:</span>
+                  <span class="font-semibold text-gray-700">${stats.clinicsByType.other.length}</span>
                 </div>
                 <div class="border-t pt-1 mt-1">
                   <div class="flex justify-between">

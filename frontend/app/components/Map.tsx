@@ -1,14 +1,20 @@
 'use client';
 
+<<<<<<< HEAD
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { MapContainer, TileLayer, Circle, Marker, Popup, useMap } from 'react-leaflet';
+=======
+>>>>>>> 90037309d8d1fa8c058166ba8860e79a5d1ab06b
 import L from 'leaflet';
+import { useEffect } from 'react';
+import { Circle, MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
 import { Clinic } from '../types';
-import HeatmapLayer from './HeatmapLayer';
 import DistrictBoundaries from './DistrictBoundaries';
+import HeatmapLayer from './HeatmapLayer';
 
 // Fix for default marker icons in Next.js
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
@@ -19,15 +25,20 @@ L.Icon.Default.mergeOptions({
 interface MapProps {
   clinics: Clinic[];
   onMapClick?: (lat: number, lng: number) => void;
+  onClinicClick?: (clinic: Clinic) => void;
   disableInteractions?: boolean;
   populationPoints?: Array<{ lat: number; lng: number; population: number }>;
   showHeatmap?: boolean;
   recommendedLocations?: Array<{ lat: number; lng: number; score: number; uncoveredPopulation: number }>;
   selectedDistrict?: string;
+<<<<<<< HEAD
   lowCoverageClinicIds?: Set<string>;
+=======
+  onRecommendedClick?: (rec: { lat: number; lng: number; score: number; uncoveredPopulation: number }) => void;
+>>>>>>> 90037309d8d1fa8c058166ba8860e79a5d1ab06b
 }
 
-function MapUpdater({ clinics }: { clinics: Clinic[] }) {
+function MapUpdater() {
   const map = useMap();
   
   useEffect(() => {
@@ -79,32 +90,49 @@ function MapClickHandler({ onMapClick, disabled }: { onMapClick?: (lat: number, 
   return null;
 }
 
+<<<<<<< HEAD
 export default function Map({
   clinics,
   onMapClick,
+=======
+export default function Map({ 
+  clinics, 
+  onMapClick,
+  onClinicClick,
+>>>>>>> 90037309d8d1fa8c058166ba8860e79a5d1ab06b
   disableInteractions = false,
   populationPoints = [],
   showHeatmap = false,
   recommendedLocations = [],
   selectedDistrict,
+<<<<<<< HEAD
   lowCoverageClinicIds = new Set(),
+=======
+  onRecommendedClick,
+>>>>>>> 90037309d8d1fa8c058166ba8860e79a5d1ab06b
 }: MapProps) {
   const router = useRouter();
 
   const getClinicColor = (type: Clinic['type']) => {
-    switch (type) {
-      case 'gaia': return '#10b981'; // green
-      case 'govt': return '#3b82f6'; // blue
-      case 'cham': return '#8b5cf6'; // purple
-      default: return '#6b7280';
+    // GAIA clinics = green, all others = gray
+    if (type === 'gaia') {
+      return '#10b981'; // green
     }
+    return '#6b7280'; // gray for all others (govt, healthcentre, other)
   };
 
   const getClinicIcon = (type: Clinic['type']) => {
     const color = getClinicColor(type);
+    const isHealthCentre = type === 'healthcentre';
+    
+    // Health centres use square shape, all others use circle
+    const shapeStyle = isHealthCentre 
+      ? 'width: 20px; height: 20px; border-radius: 2px;' // square with rounded corners
+      : 'width: 20px; height: 20px; border-radius: 50%;'; // circle
+    
     return L.divIcon({
       className: 'custom-marker',
-      html: `<div style="background-color: ${color}; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
+      html: `<div style="background-color: ${color}; ${shapeStyle} border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
       iconSize: [20, 20],
       iconAnchor: [10, 10],
     });
@@ -160,7 +188,7 @@ export default function Map({
           clinics={clinics}
           populationPoints={populationPoints}
         />
-        <MapUpdater clinics={clinics} />
+        <MapUpdater />
         <MapClickHandler onMapClick={onMapClick} disabled={disableInteractions} />
         {clinics.map((clinic) => {
           const isLowCoverage = lowCoverageClinicIds.has(clinic.id);
@@ -180,6 +208,7 @@ export default function Map({
             )}
             <Marker
               position={[clinic.lat, clinic.lng]}
+<<<<<<< HEAD
               icon={isLowCoverage ? getLowCoverageIcon(clinic.type) : getClinicIcon(clinic.type)}
             >
               <Popup>
@@ -209,6 +238,17 @@ export default function Map({
                 </div>
               </Popup>
             </Marker>
+=======
+              icon={getClinicIcon(clinic.type)}
+              eventHandlers={{
+                click: () => {
+                  if (onClinicClick) {
+                    onClinicClick(clinic);
+                  }
+                },
+              }}
+            />
+>>>>>>> 90037309d8d1fa8c058166ba8860e79a5d1ab06b
           </div>
         );
         })}
@@ -238,6 +278,14 @@ export default function Map({
                   <p className="text-sm text-black">
                     Uncovered Population: {rec.uncoveredPopulation.toLocaleString()}
                   </p>
+                  {onRecommendedClick && (
+                    <button
+                      onClick={() => onRecommendedClick(rec)}
+                      className="mt-2 w-full px-3 py-1.5 bg-amber-600 text-white rounded hover:bg-amber-700 text-sm font-medium"
+                    >
+                      Add Clinic
+                    </button>
+                  )}
                 </div>
               </Popup>
             </Marker>

@@ -14,10 +14,14 @@ export const mockClinics: Clinic[] = [
   { id: 'govt-4', name: 'Mulanje Health Post', type: 'govt', lat: -16.0833, lng: 35.4500 },
   { id: 'govt-5', name: 'Phalombe Health Post', type: 'govt', lat: -15.7333, lng: 35.5667 },
   
-  // CHAM clinics
-  { id: 'cham-1', name: 'CHAM Clinic Mulanje', type: 'cham', lat: -16.0133, lng: 35.4800 },
-  { id: 'cham-2', name: 'CHAM Clinic Phalombe', type: 'cham', lat: -15.7633, lng: 35.5367 },
-  { id: 'cham-3', name: 'CHAM Clinic Mangochi', type: 'cham', lat: -14.4633, lng: 35.2867 },
+  // Health Centre clinics
+  { id: 'healthcentre-1', name: 'Mulanje Health Centre', type: 'healthcentre', lat: -16.0133, lng: 35.4800 },
+  { id: 'healthcentre-2', name: 'Phalombe Health Centre', type: 'healthcentre', lat: -15.7633, lng: 35.5367 },
+  { id: 'healthcentre-3', name: 'Mangochi Health Centre', type: 'healthcentre', lat: -14.4633, lng: 35.2867 },
+  
+  // Other clinics
+  { id: 'other-1', name: 'Private Clinic Mulanje', type: 'other', lat: -16.0233, lng: 35.4900 },
+  { id: 'other-2', name: 'Mission Clinic Phalombe', type: 'other', lat: -15.7733, lng: 35.5267 },
 ];
 
 // Mock population grid points (simplified for demo)

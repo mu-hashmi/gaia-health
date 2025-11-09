@@ -6,29 +6,31 @@ import { Clinic } from '../types';
 interface ClinicListProps {
   clinics: Clinic[];
   onRemove: (id: string) => void;
+  onSelectClinic?: (clinic: Clinic | null) => void;
+  selectedClinicId?: string | null;
 }
 
 const ITEMS_PER_PAGE = 10;
 
-export default function ClinicList({ clinics, onRemove }: ClinicListProps) {
+export default function ClinicList({ clinics, onRemove, onSelectClinic, selectedClinicId }: ClinicListProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [sortField, setSortField] = useState<'name' | 'type' | 'district'>('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   const getClinicTypeColor = (type: Clinic['type']) => {
-    switch (type) {
-      case 'gaia': return 'bg-green-100 text-green-800 border-green-300';
-      case 'govt': return 'bg-blue-100 text-blue-800 border-blue-300';
-      case 'cham': return 'bg-purple-100 text-purple-800 border-purple-300';
-      default: return 'bg-gray-100 text-black border-gray-300';
+    // GAIA = green, all others = gray
+    if (type === 'gaia') {
+      return 'bg-green-100 text-green-800 border-green-300';
     }
+    return 'bg-gray-100 text-gray-800 border-gray-300';
   };
 
   const getClinicTypeLabel = (type: Clinic['type']) => {
     switch (type) {
       case 'gaia': return 'GAIA';
       case 'govt': return 'Government';
-      case 'cham': return 'CHAM';
+      case 'healthcentre': return 'Health Centre';
+      case 'other': return 'Other';
       default: return type;
     }
   };
@@ -68,29 +70,31 @@ export default function ClinicList({ clinics, onRemove }: ClinicListProps) {
     }
   };
 
-  const clinicsByType = {
+  const clinicsByCategory = {
     gaia: clinics.filter(c => c.type === 'gaia'),
-    govt: clinics.filter(c => c.type === 'govt'),
-    cham: clinics.filter(c => c.type === 'cham'),
+    allOthers: clinics.filter(c => c.type !== 'gaia'),
   };
+  
+  const healthCentres = clinics.filter(c => c.type === 'healthcentre');
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
       <h2 className="text-2xl font-bold text-black mb-4">Clinics ({clinics.length})</h2>
       
-      {/* Summary by type */}
-      <div className="grid grid-cols-3 gap-2 mb-4 text-sm">
+      {/* Summary by category */}
+      <div className="grid grid-cols-2 gap-2 mb-4 text-sm">
         <div className="bg-green-50 p-2 rounded text-center">
           <div className="font-semibold text-green-800">GAIA</div>
-          <div className="text-green-600">{clinicsByType.gaia.length}</div>
+          <div className="text-green-600">{clinicsByCategory.gaia.length}</div>
         </div>
-        <div className="bg-blue-50 p-2 rounded text-center">
-          <div className="font-semibold text-blue-800">Government</div>
-          <div className="text-blue-600">{clinicsByType.govt.length}</div>
-        </div>
-        <div className="bg-purple-50 p-2 rounded text-center">
-          <div className="font-semibold text-purple-800">CHAM</div>
-          <div className="text-purple-600">{clinicsByType.cham.length}</div>
+        <div className="bg-gray-50 p-2 rounded text-center">
+          <div className="font-semibold text-gray-800">Other</div>
+          <div className="text-gray-600">{clinicsByCategory.allOthers.length}</div>
+          {healthCentres.length > 0 && (
+            <div className="text-xs text-gray-600 mt-1">
+              ({healthCentres.length} health centres)
+            </div>
+          )}
         </div>
       </div>
 
@@ -117,29 +121,50 @@ export default function ClinicList({ clinics, onRemove }: ClinicListProps) {
               >
                 District {sortField === 'district' && (sortDirection === 'asc' ? '↑' : '↓')}
               </th>
-              <th className="text-right p-2">Actions</th>
+              {onSelectClinic && (
+                <th className="text-right p-2">Actions</th>
+              )}
             </tr>
           </thead>
           <tbody>
-            {paginatedClinics.map(clinic => (
-              <tr key={clinic.id} className="border-b hover:bg-gray-50">
-                <td className="p-2 font-medium text-black">{clinic.name}</td>
-                <td className="p-2">
-                  <span className={`px-2 py-1 rounded text-xs ${getClinicTypeColor(clinic.type)}`}>
-                    {getClinicTypeLabel(clinic.type)}
-                  </span>
-                </td>
-                <td className="p-2 text-gray-600">{clinic.district || 'N/A'}</td>
-                <td className="p-2 text-right">
-                  <button
-                    onClick={() => onRemove(clinic.id)}
-                    className="text-red-600 hover:text-red-800 font-semibold text-xs"
-                  >
-                    Remove
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {paginatedClinics.map(clinic => {
+              const isSelected = selectedClinicId === clinic.id;
+              const isGovt = clinic.type === 'govt';
+              return (
+                <tr 
+                  key={clinic.id} 
+                  className={`border-b hover:bg-gray-50 ${isSelected ? 'bg-blue-50' : ''} ${isGovt && onSelectClinic ? 'cursor-pointer' : ''}`}
+                  onClick={() => isGovt && onSelectClinic && onSelectClinic(isSelected ? null : clinic)}
+                >
+                  <td className="p-2 font-medium text-black">{clinic.name}</td>
+                  <td className="p-2">
+                    <span className={`px-2 py-1 rounded text-xs ${getClinicTypeColor(clinic.type)}`}>
+                      {getClinicTypeLabel(clinic.type)}
+                    </span>
+                  </td>
+                  <td className="p-2 text-gray-600">{clinic.district || 'N/A'}</td>
+                  {onSelectClinic && (
+                    <td className="p-2 text-right">
+                      {isGovt && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onSelectClinic(isSelected ? null : clinic);
+                          }}
+                          className={`px-2 py-1 rounded text-xs font-medium ${
+                            isSelected 
+                              ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                              : 'bg-blue-100 text-blue-800 hover:bg-blue-200'
+                          }`}
+                        >
+                          {isSelected ? 'Hide Impact' : 'View Impact'}
+                        </button>
+                      )}
+                    </td>
+                  )}
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

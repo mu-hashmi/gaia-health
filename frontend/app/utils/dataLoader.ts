@@ -88,17 +88,20 @@ export async function loadMHFRClinics(): Promise<Clinic[]> {
     // Validate coordinate ranges for Malawi
     if (lat < -17 || lat > -9 || lng < 32 || lng > 36) continue;
     
-    // Determine clinic type based on ownership
-    let type: Clinic['type'] = 'govt';
+    // Determine clinic type based on TYPE and OWNERSHIP
+    const facilityType = row.TYPE?.trim() || '';
     const ownership = row.OWNERSHIP?.toLowerCase() || '';
-    if (ownership.includes('cham')) {
-      type = 'cham';
+    
+    let type: Clinic['type'];
+    
+    // Check if it's a Health Centre first
+    if (facilityType.toLowerCase() === 'health centre') {
+      type = 'healthcentre';
     } else if (ownership.includes('government')) {
       type = 'govt';
     } else {
-      // For other types, default to govt or skip private clinics
-      // You can adjust this logic based on requirements
-      continue; // Skip private clinics for now, or set type = 'govt'
+      // All other types (private, mission-based, etc.) go to 'other'
+      type = 'other';
     }
     
     clinics.push({

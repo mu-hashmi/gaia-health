@@ -16,7 +16,7 @@ const OUTPUT_DIR = join(process.cwd(), 'public', 'data');
 interface Clinic {
   id: string;
   name: string;
-  type: 'gaia' | 'govt' | 'cham';
+  type: 'gaia' | 'govt' | 'healthcentre' | 'other';
   lat: number;
   lng: number;
   district?: string;
@@ -101,12 +101,20 @@ async function processClinics() {
       if (isNaN(lat) || isNaN(lng)) continue;
       if (lat < -17 || lat > -9 || lng < 32 || lng > 36) continue;
       
-      let type: Clinic['type'] = 'govt';
+      // Determine clinic type based on TYPE and OWNERSHIP
+      const facilityType = row.TYPE?.trim() || '';
       const ownership = row.OWNERSHIP?.toLowerCase() || '';
-      if (ownership.includes('cham')) {
-        type = 'cham';
-      } else if (!ownership.includes('government')) {
-        continue; // Skip private clinics
+      
+      let type: Clinic['type'];
+      
+      // Check if it's a Health Centre first
+      if (facilityType.toLowerCase() === 'health centre') {
+        type = 'healthcentre';
+      } else if (ownership.includes('government')) {
+        type = 'govt';
+      } else {
+        // All other types (private, mission-based, etc.) go to 'other'
+        type = 'other';
       }
       
       clinics.push({
@@ -177,6 +185,29 @@ async function processBoundaries() {
   );
   
   console.log('✓ Processed district boundaries');
+}
+
+async function processVillages() {
+  console.log('Processing villages...');
+  
+  const geojsonPath = join(DATA_DIR, 'villages.geojson');
+  const geojson = await readFile(geojsonPath, 'utf-8');
+  const data = JSON.parse(geojson);
+  
+  // Convert GeoJSON to simplified format: [lng, lat] -> {lat, lng, name}
+  const villages = data.features.map((feature: any) => ({
+    lat: feature.geometry.coordinates[1], // GeoJSON uses [lng, lat]
+    lng: feature.geometry.coordinates[0],
+    name: feature.properties.name || 'Unnamed Village',
+  }));
+  
+  await writeFile(
+    join(OUTPUT_DIR, 'villages.json'),
+    JSON.stringify(villages),
+    'utf-8'
+  );
+  
+  console.log(`✓ Processed ${villages.length} villages`);
 }
 
 async function processPopulation(sampleFactor: number = 5) {
@@ -254,6 +285,7 @@ async function main() {
       processClinics(),
       processDistricts(),
       processBoundaries(),
+      processVillages(),
     ]);
     
     // Process population separately as it's the slowest

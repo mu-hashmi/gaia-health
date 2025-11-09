@@ -3,8 +3,8 @@ import { readFile } from 'fs/promises';
 import { join } from 'path';
 import { loadAllClinics } from '../../utils/dataLoader';
 
-// Cache for 24 hours (86400 seconds)
-export const revalidate = 86400;
+// Force dynamic rendering for API route
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {

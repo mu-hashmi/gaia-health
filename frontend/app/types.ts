@@ -1,4 +1,4 @@
-export type ClinicType = 'govt' | 'cham' | 'gaia';
+export type ClinicType = 'gaia' | 'govt' | 'healthcentre' | 'other';
 
 export interface Clinic {
   id: string;
@@ -14,5 +14,11 @@ export interface CoverageStats {
   coveredPopulation: number;
   uncoveredPopulation: number;
   coveragePercentage: number;
+}
+
+export interface Village {
+  lat: number;
+  lng: number;
+  name: string;
 }
 
