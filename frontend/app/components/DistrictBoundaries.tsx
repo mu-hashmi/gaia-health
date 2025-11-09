@@ -26,9 +26,17 @@ export default function DistrictBoundaries({
   useEffect(() => {
     // Load GeoJSON data
     fetch('/api/districts/geojson')
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`Failed to load district boundaries: ${res.status} ${res.statusText}`);
+        }
+        return res.json();
+      })
       .then(data => setGeoJsonData(data as GeoJsonObject))
-      .catch(err => console.error('Error loading district boundaries:', err));
+      .catch(err => {
+        console.error('Error loading district boundaries:', err);
+        // Optionally set an error state or show a user-friendly message
+      });
   }, []);
 
   if (!geoJsonData) {

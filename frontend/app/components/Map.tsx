@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect } from 'react';
-import { MapContainer, TileLayer, Circle, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
+import { useEffect } from 'react';
+import { Circle, MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
 import { Clinic } from '../types';
-import HeatmapLayer from './HeatmapLayer';
 import DistrictBoundaries from './DistrictBoundaries';
+import HeatmapLayer from './HeatmapLayer';
 
 // Fix for default marker icons in Next.js
 delete (L.Icon.Default.prototype as any)._getIconUrl;
