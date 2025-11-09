@@ -27,7 +27,8 @@ export default function DistrictModal({
   const clinicsByType = {
     gaia: districtClinics.filter(c => c.type === 'gaia'),
     govt: districtClinics.filter(c => c.type === 'govt'),
-    cham: districtClinics.filter(c => c.type === 'cham'),
+    healthcentre: districtClinics.filter(c => c.type === 'healthcentre'),
+    other: districtClinics.filter(c => c.type === 'other'),
   };
 
   // Calculate coverage for this district
@@ -62,7 +63,8 @@ export default function DistrictModal({
   const coverageByType = {
     gaia: calculateUniqueCoverageByType('gaia'),
     govt: calculateUniqueCoverageByType('govt'),
-    cham: calculateUniqueCoverageByType('cham'),
+    healthcentre: calculateUniqueCoverageByType('healthcentre'),
+    other: calculateUniqueCoverageByType('other'),
   };
 
   return (
@@ -113,7 +115,7 @@ export default function DistrictModal({
           {/* Clinics by Type */}
           <div className="mb-6">
             <h3 className="text-lg font-semibold text-black mb-3">Clinics by Type</h3>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               <div className="bg-green-50 p-4 rounded-lg text-center">
                 <div className="text-sm text-gray-600 mb-1">GAIA</div>
                 <div className="text-xl font-bold text-green-700">{clinicsByType.gaia.length}</div>
@@ -128,11 +130,18 @@ export default function DistrictModal({
                   {coverageByType.govt.toLocaleString()} covered
                 </div>
               </div>
-              <div className="bg-purple-50 p-4 rounded-lg text-center">
-                <div className="text-sm text-gray-600 mb-1">CHAM</div>
-                <div className="text-xl font-bold text-purple-700">{clinicsByType.cham.length}</div>
+              <div className="bg-orange-50 p-4 rounded-lg text-center">
+                <div className="text-sm text-gray-600 mb-1">Health Centre</div>
+                <div className="text-xl font-bold text-orange-700">{clinicsByType.healthcentre.length}</div>
                 <div className="text-xs text-gray-600 mt-1">
-                  {coverageByType.cham.toLocaleString()} covered
+                  {coverageByType.healthcentre.toLocaleString()} covered
+                </div>
+              </div>
+              <div className="bg-gray-50 p-4 rounded-lg text-center">
+                <div className="text-sm text-gray-600 mb-1">Other</div>
+                <div className="text-xl font-bold text-gray-700">{clinicsByType.other.length}</div>
+                <div className="text-xs text-gray-600 mt-1">
+                  {coverageByType.other.toLocaleString()} covered
                 </div>
               </div>
             </div>
@@ -150,7 +159,8 @@ export default function DistrictModal({
                     switch (type) {
                       case 'gaia': return 'bg-green-100 text-green-800 border-green-300';
                       case 'govt': return 'bg-blue-100 text-blue-800 border-blue-300';
-                      case 'cham': return 'bg-purple-100 text-purple-800 border-purple-300';
+                      case 'healthcentre': return 'bg-orange-100 text-orange-800 border-orange-300';
+                      case 'other': return 'bg-gray-100 text-gray-800 border-gray-300';
                       default: return 'bg-gray-100 text-black border-gray-300';
                     }
                   };

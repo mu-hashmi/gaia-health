@@ -16,7 +16,7 @@ const OUTPUT_DIR = join(process.cwd(), 'public', 'data');
 interface Clinic {
   id: string;
   name: string;
-  type: 'gaia' | 'govt' | 'cham';
+  type: 'gaia' | 'govt' | 'healthcentre' | 'other';
   lat: number;
   lng: number;
   district?: string;
@@ -101,12 +101,20 @@ async function processClinics() {
       if (isNaN(lat) || isNaN(lng)) continue;
       if (lat < -17 || lat > -9 || lng < 32 || lng > 36) continue;
       
-      let type: Clinic['type'] = 'govt';
+      // Determine clinic type based on TYPE and OWNERSHIP
+      const facilityType = row.TYPE?.trim() || '';
       const ownership = row.OWNERSHIP?.toLowerCase() || '';
-      if (ownership.includes('cham')) {
-        type = 'cham';
-      } else if (!ownership.includes('government')) {
-        continue; // Skip private clinics
+      
+      let type: Clinic['type'];
+      
+      // Check if it's a Health Centre first
+      if (facilityType.toLowerCase() === 'health centre') {
+        type = 'healthcentre';
+      } else if (ownership.includes('government')) {
+        type = 'govt';
+      } else {
+        // All other types (private, mission-based, etc.) go to 'other'
+        type = 'other';
       }
       
       clinics.push({

@@ -36,7 +36,8 @@ export interface DistrictStats {
   clinicsByType: {
     gaia: Clinic[];
     govt: Clinic[];
-    cham: Clinic[];
+    healthcentre: Clinic[];
+    other: Clinic[];
   };
   coverage: {
     totalPopulation: number;
@@ -47,7 +48,8 @@ export interface DistrictStats {
   coverageByType: {
     gaia: number;
     govt: number;
-    cham: number;
+    healthcentre: number;
+    other: number;
   };
 }
 
@@ -63,7 +65,8 @@ export function calculateDistrictStats(
   const clinicsByType = {
     gaia: districtClinics.filter(c => c.type === 'gaia'),
     govt: districtClinics.filter(c => c.type === 'govt'),
-    cham: districtClinics.filter(c => c.type === 'cham'),
+    healthcentre: districtClinics.filter(c => c.type === 'healthcentre'),
+    other: districtClinics.filter(c => c.type === 'other'),
   };
 
   // Calculate coverage for this district
@@ -102,7 +105,8 @@ export function calculateDistrictStats(
   const coverageByType = {
     gaia: calculateUniqueCoverageByType('gaia'),
     govt: calculateUniqueCoverageByType('govt'),
-    cham: calculateUniqueCoverageByType('cham'),
+    healthcentre: calculateUniqueCoverageByType('healthcentre'),
+    other: calculateUniqueCoverageByType('other'),
   };
 
   return {

@@ -89,7 +89,8 @@ export default function AddClinicModal({
             >
               <option value="gaia" className="text-black">GAIA</option>
               <option value="govt" className="text-black">Government</option>
-              <option value="cham" className="text-black">CHAM</option>
+              <option value="healthcentre" className="text-black">Health Centre</option>
+              <option value="other" className="text-black">Other</option>
             </select>
           </div>
 

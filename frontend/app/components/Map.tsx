@@ -90,7 +90,8 @@ export default function Map({
     switch (type) {
       case 'gaia': return '#10b981'; // green
       case 'govt': return '#3b82f6'; // blue
-      case 'cham': return '#8b5cf6'; // purple
+      case 'healthcentre': return '#f97316'; // orange
+      case 'other': return '#6b7280'; // gray
       default: return '#6b7280';
     }
   };

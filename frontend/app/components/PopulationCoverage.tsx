@@ -129,7 +129,8 @@ export default function PopulationCoverage({
     const totals = {
       gaia: calculateUniqueCoverageByType('gaia'),
       govt: calculateUniqueCoverageByType('govt'),
-      cham: calculateUniqueCoverageByType('cham'),
+      healthcentre: calculateUniqueCoverageByType('healthcentre'),
+      other: calculateUniqueCoverageByType('other'),
       total: calculateUniqueCoverageTotal(),
     };
 
@@ -140,7 +141,8 @@ export default function PopulationCoverage({
     switch (type) {
       case 'gaia': return 'bg-green-100 text-green-800 border-green-300';
       case 'govt': return 'bg-blue-100 text-blue-800 border-blue-300';
-      case 'cham': return 'bg-purple-100 text-purple-800 border-purple-300';
+      case 'healthcentre': return 'bg-orange-100 text-orange-800 border-orange-300';
+      case 'other': return 'bg-gray-100 text-gray-800 border-gray-300';
       default: return 'bg-gray-100 text-black border-gray-300';
     }
   };
@@ -173,15 +175,21 @@ export default function PopulationCoverage({
                 {totals.govt.toLocaleString()}
               </div>
             </div>
-            <div className="bg-purple-50 p-3 rounded-lg">
-              <div className="text-sm text-gray-600">CHAM Total</div>
-              <div className="text-xl font-bold text-purple-700">
-                {totals.cham.toLocaleString()}
+            <div className="bg-orange-50 p-3 rounded-lg">
+              <div className="text-sm text-gray-600">Health Centre Total</div>
+              <div className="text-xl font-bold text-orange-700">
+                {totals.healthcentre.toLocaleString()}
               </div>
             </div>
             <div className="bg-gray-50 p-3 rounded-lg">
-              <div className="text-sm text-gray-600">Grand Total</div>
+              <div className="text-sm text-gray-600">Other Total</div>
               <div className="text-xl font-bold text-gray-700">
+                {totals.other.toLocaleString()}
+              </div>
+            </div>
+            <div className="bg-gray-100 p-3 rounded-lg col-span-2">
+              <div className="text-sm text-gray-600">Grand Total</div>
+              <div className="text-xl font-bold text-gray-800">
                 {totals.total.toLocaleString()}
               </div>
             </div>

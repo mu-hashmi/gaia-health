@@ -19,7 +19,8 @@ export default function ClinicList({ clinics, onRemove }: ClinicListProps) {
     switch (type) {
       case 'gaia': return 'bg-green-100 text-green-800 border-green-300';
       case 'govt': return 'bg-blue-100 text-blue-800 border-blue-300';
-      case 'cham': return 'bg-purple-100 text-purple-800 border-purple-300';
+      case 'healthcentre': return 'bg-orange-100 text-orange-800 border-orange-300';
+      case 'other': return 'bg-gray-100 text-gray-800 border-gray-300';
       default: return 'bg-gray-100 text-black border-gray-300';
     }
   };
@@ -28,7 +29,8 @@ export default function ClinicList({ clinics, onRemove }: ClinicListProps) {
     switch (type) {
       case 'gaia': return 'GAIA';
       case 'govt': return 'Government';
-      case 'cham': return 'CHAM';
+      case 'healthcentre': return 'Health Centre';
+      case 'other': return 'Other';
       default: return type;
     }
   };
@@ -71,7 +73,8 @@ export default function ClinicList({ clinics, onRemove }: ClinicListProps) {
   const clinicsByType = {
     gaia: clinics.filter(c => c.type === 'gaia'),
     govt: clinics.filter(c => c.type === 'govt'),
-    cham: clinics.filter(c => c.type === 'cham'),
+    healthcentre: clinics.filter(c => c.type === 'healthcentre'),
+    other: clinics.filter(c => c.type === 'other'),
   };
 
   return (
@@ -79,7 +82,7 @@ export default function ClinicList({ clinics, onRemove }: ClinicListProps) {
       <h2 className="text-2xl font-bold text-black mb-4">Clinics ({clinics.length})</h2>
       
       {/* Summary by type */}
-      <div className="grid grid-cols-3 gap-2 mb-4 text-sm">
+      <div className="grid grid-cols-4 gap-2 mb-4 text-sm">
         <div className="bg-green-50 p-2 rounded text-center">
           <div className="font-semibold text-green-800">GAIA</div>
           <div className="text-green-600">{clinicsByType.gaia.length}</div>
@@ -88,9 +91,13 @@ export default function ClinicList({ clinics, onRemove }: ClinicListProps) {
           <div className="font-semibold text-blue-800">Government</div>
           <div className="text-blue-600">{clinicsByType.govt.length}</div>
         </div>
-        <div className="bg-purple-50 p-2 rounded text-center">
-          <div className="font-semibold text-purple-800">CHAM</div>
-          <div className="text-purple-600">{clinicsByType.cham.length}</div>
+        <div className="bg-orange-50 p-2 rounded text-center">
+          <div className="font-semibold text-orange-800">Health Centre</div>
+          <div className="text-orange-600">{clinicsByType.healthcentre.length}</div>
+        </div>
+        <div className="bg-gray-50 p-2 rounded text-center">
+          <div className="font-semibold text-gray-800">Other</div>
+          <div className="text-gray-600">{clinicsByType.other.length}</div>
         </div>
       </div>
 

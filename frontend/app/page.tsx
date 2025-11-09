@@ -37,7 +37,7 @@ export default function Home() {
   const [isGeneratingRecommendations, setIsGeneratingRecommendations] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(true);
   const [selectedDistrict, setSelectedDistrict] = useState<string>('');
-  const [selectedClinicTypes, setSelectedClinicTypes] = useState<Set<Clinic['type']>>(new Set(['gaia', 'govt', 'cham']));
+  const [selectedClinicTypes, setSelectedClinicTypes] = useState<Set<Clinic['type']>>(new Set(['gaia', 'govt', 'healthcentre', 'other']));
   const [districts, setDistricts] = useState<Array<{ name: string; id: number }>>([]);
 
   // Load real data on mount
@@ -279,11 +279,20 @@ export default function Home() {
                       <label className="flex items-center gap-1 text-sm cursor-pointer">
                         <input
                           type="checkbox"
-                          checked={selectedClinicTypes.has('cham')}
-                          onChange={() => handleClinicTypeToggle('cham')}
+                          checked={selectedClinicTypes.has('healthcentre')}
+                          onChange={() => handleClinicTypeToggle('healthcentre')}
                           className="w-4 h-4"
                         />
-                        <span className="text-black">CHAM</span>
+                        <span className="text-black">Health Centre</span>
+                      </label>
+                      <label className="flex items-center gap-1 text-sm cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={selectedClinicTypes.has('other')}
+                          onChange={() => handleClinicTypeToggle('other')}
+                          className="w-4 h-4"
+                        />
+                        <span className="text-black">Other</span>
                       </label>
                     </div>
                   </div>
@@ -298,8 +307,12 @@ export default function Home() {
                     <span className="text-black font-medium">Government</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 rounded-full bg-purple-500"></div>
-                    <span className="text-black font-medium">CHAM</span>
+                    <div className="w-4 h-4 rounded-full bg-orange-500"></div>
+                    <span className="text-black font-medium">Health Centre</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 rounded-full bg-gray-500"></div>
+                    <span className="text-black font-medium">Other</span>
                   </div>
                   {recommendations.length > 0 && (
                     <div className="flex items-center gap-2">

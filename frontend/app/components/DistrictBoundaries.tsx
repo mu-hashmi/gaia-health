@@ -110,8 +110,12 @@ export default function DistrictBoundaries({
                   <span class="font-semibold text-blue-700">${stats.clinicsByType.govt.length}</span>
                 </div>
                 <div class="flex justify-between">
-                  <span class="text-gray-600">CHAM:</span>
-                  <span class="font-semibold text-purple-700">${stats.clinicsByType.cham.length}</span>
+                  <span class="text-gray-600">Health Centre:</span>
+                  <span class="font-semibold text-orange-700">${stats.clinicsByType.healthcentre.length}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-600">Other:</span>
+                  <span class="font-semibold text-gray-700">${stats.clinicsByType.other.length}</span>
                 </div>
                 <div class="border-t pt-1 mt-1">
                   <div class="flex justify-between">

@@ -1,4 +1,4 @@
-export type ClinicType = 'govt' | 'cham' | 'gaia';
+export type ClinicType = 'gaia' | 'govt' | 'healthcentre' | 'other';
 
 export interface Clinic {
   id: string;
