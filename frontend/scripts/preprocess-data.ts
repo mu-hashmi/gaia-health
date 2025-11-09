@@ -187,6 +187,29 @@ async function processBoundaries() {
   console.log('✓ Processed district boundaries');
 }
 
+async function processVillages() {
+  console.log('Processing villages...');
+  
+  const geojsonPath = join(DATA_DIR, 'villages.geojson');
+  const geojson = await readFile(geojsonPath, 'utf-8');
+  const data = JSON.parse(geojson);
+  
+  // Convert GeoJSON to simplified format: [lng, lat] -> {lat, lng, name}
+  const villages = data.features.map((feature: any) => ({
+    lat: feature.geometry.coordinates[1], // GeoJSON uses [lng, lat]
+    lng: feature.geometry.coordinates[0],
+    name: feature.properties.name || 'Unnamed Village',
+  }));
+  
+  await writeFile(
+    join(OUTPUT_DIR, 'villages.json'),
+    JSON.stringify(villages),
+    'utf-8'
+  );
+  
+  console.log(`✓ Processed ${villages.length} villages`);
+}
+
 async function processPopulation(sampleFactor: number = 5) {
   console.log(`Processing population data (sampleFactor=${sampleFactor})...`);
   
@@ -262,6 +285,7 @@ async function main() {
       processClinics(),
       processDistricts(),
       processBoundaries(),
+      processVillages(),
     ]);
     
     // Process population separately as it's the slowest

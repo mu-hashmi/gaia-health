@@ -16,3 +16,9 @@ export interface CoverageStats {
   coveragePercentage: number;
 }
 
+export interface Village {
+  lat: number;
+  lng: number;
+  name: string;
+}
+

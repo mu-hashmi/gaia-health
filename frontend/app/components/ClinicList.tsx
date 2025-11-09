@@ -6,11 +6,13 @@ import { Clinic } from '../types';
 interface ClinicListProps {
   clinics: Clinic[];
   onRemove: (id: string) => void;
+  onSelectClinic?: (clinic: Clinic | null) => void;
+  selectedClinicId?: string | null;
 }
 
 const ITEMS_PER_PAGE = 10;
 
-export default function ClinicList({ clinics, onRemove }: ClinicListProps) {
+export default function ClinicList({ clinics, onRemove, onSelectClinic, selectedClinicId }: ClinicListProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [sortField, setSortField] = useState<'name' | 'type' | 'district'>('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
@@ -128,25 +130,51 @@ export default function ClinicList({ clinics, onRemove }: ClinicListProps) {
             </tr>
           </thead>
           <tbody>
-            {paginatedClinics.map(clinic => (
-              <tr key={clinic.id} className="border-b hover:bg-gray-50">
-                <td className="p-2 font-medium text-black">{clinic.name}</td>
-                <td className="p-2">
-                  <span className={`px-2 py-1 rounded text-xs ${getClinicTypeColor(clinic.type)}`}>
-                    {getClinicTypeLabel(clinic.type)}
-                  </span>
-                </td>
-                <td className="p-2 text-gray-600">{clinic.district || 'N/A'}</td>
-                <td className="p-2 text-right">
-                  <button
-                    onClick={() => onRemove(clinic.id)}
-                    className="text-red-600 hover:text-red-800 font-semibold text-xs"
-                  >
-                    Remove
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {paginatedClinics.map(clinic => {
+              const isSelected = selectedClinicId === clinic.id;
+              const isGovt = clinic.type === 'govt';
+              return (
+                <tr 
+                  key={clinic.id} 
+                  className={`border-b hover:bg-gray-50 ${isSelected ? 'bg-blue-50' : ''} ${isGovt && onSelectClinic ? 'cursor-pointer' : ''}`}
+                  onClick={() => isGovt && onSelectClinic && onSelectClinic(isSelected ? null : clinic)}
+                >
+                  <td className="p-2 font-medium text-black">{clinic.name}</td>
+                  <td className="p-2">
+                    <span className={`px-2 py-1 rounded text-xs ${getClinicTypeColor(clinic.type)}`}>
+                      {getClinicTypeLabel(clinic.type)}
+                    </span>
+                  </td>
+                  <td className="p-2 text-gray-600">{clinic.district || 'N/A'}</td>
+                  <td className="p-2 text-right">
+                    {isGovt && onSelectClinic && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onSelectClinic(isSelected ? null : clinic);
+                        }}
+                        className={`mr-2 px-2 py-1 rounded text-xs font-medium ${
+                          isSelected 
+                            ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                            : 'bg-blue-100 text-blue-800 hover:bg-blue-200'
+                        }`}
+                      >
+                        {isSelected ? 'Hide Impact' : 'View Impact'}
+                      </button>
+                    )}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onRemove(clinic.id);
+                      }}
+                      className="text-red-600 hover:text-red-800 font-semibold text-xs"
+                    >
+                      Remove
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

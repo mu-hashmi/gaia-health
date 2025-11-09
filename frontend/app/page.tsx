@@ -2,15 +2,17 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import dynamic from 'next/dynamic';
-import { Clinic, CoverageStats } from './types';
+import { Clinic, CoverageStats, Village } from './types';
 import { calculateCoverage } from './utils/coverage';
 import { generateRecommendations, RecommendedLocation } from './utils/recommendations';
+import { calculateRemovalImpact, recommendGAIAHCLocations, GAIARecommendation } from './utils/villageAnalysis';
 import CoverageStatsComponent from './components/CoverageStats';
 import ClinicList from './components/ClinicList';
 import AddClinicModal from './components/AddClinicModal';
 import Recommendations from './components/Recommendations';
 import PopulationCoverage from './components/PopulationCoverage';
 import DistrictStats from './components/DistrictStats';
+import ClinicImpactAnalysis from './components/ClinicImpactAnalysis';
 
 // Dynamically import Map to avoid SSR issues with Leaflet
 const Map = dynamic(() => import('./components/Map'), { ssr: false });
@@ -39,17 +41,22 @@ export default function Home() {
   const [selectedDistrict, setSelectedDistrict] = useState<string>('');
   const [selectedClinicTypes, setSelectedClinicTypes] = useState<Set<Clinic['type']>>(new Set(['gaia', 'govt', 'healthcentre', 'other']));
   const [districts, setDistricts] = useState<Array<{ name: string; id: number }>>([]);
+  const [villages, setVillages] = useState<Village[]>([]);
+  const [selectedClinic, setSelectedClinic] = useState<Clinic | null>(null);
+  const [impactAnalysis, setImpactAnalysis] = useState<ReturnType<typeof calculateRemovalImpact> | null>(null);
+  const [gaiaRecommendations, setGaiaRecommendations] = useState<GAIARecommendation[]>([]);
 
   // Load real data on mount
   useEffect(() => {
     async function loadData() {
       try {
         setIsLoadingData(true);
-        // Load clinics, population, and districts data in parallel
-        const [clinicsResponse, populationResponse, districtsResponse] = await Promise.all([
+        // Load clinics, population, districts, and villages data in parallel
+        const [clinicsResponse, populationResponse, districtsResponse, villagesResponse] = await Promise.all([
           fetch('/api/clinics'),
           fetch('/api/population?sampleFactor=5'),
           fetch('/api/districts'),
+          fetch('/api/villages'),
         ]);
 
         if (!clinicsResponse.ok || !populationResponse.ok) {
@@ -59,11 +66,13 @@ export default function Home() {
         const clinics = await clinicsResponse.json();
         const population = await populationResponse.json();
         const districtsData = districtsResponse.ok ? await districtsResponse.json() : [];
+        const villagesData = villagesResponse.ok ? await villagesResponse.json() : [];
 
         setCurrentClinics(clinics);
         setHypotheticalClinics(clinics);
         setPopulationPoints(population);
         setDistricts(districtsData);
+        setVillages(villagesData);
       } catch (error) {
         console.error('Error loading data:', error);
         // Fallback to empty arrays on error
@@ -71,6 +80,7 @@ export default function Home() {
         setHypotheticalClinics([]);
         setPopulationPoints([]);
         setDistricts([]);
+        setVillages([]);
       } finally {
         setIsLoadingData(false);
       }
@@ -191,6 +201,51 @@ export default function Home() {
       newSet.add(type);
     }
     setSelectedClinicTypes(newSet);
+  };
+
+  // Handle clinic selection for impact analysis
+  useEffect(() => {
+    if (selectedClinic && villages.length > 0 && populationPoints.length > 0) {
+      const clinicsToUse = currentTab === 'current' ? currentClinics : hypotheticalClinics;
+      const impact = calculateRemovalImpact(
+        selectedClinic,
+        clinicsToUse,
+        villages,
+        populationPoints
+      );
+      setImpactAnalysis(impact);
+
+      // Generate GAIA recommendations
+      const recommendations = recommendGAIAHCLocations(
+        selectedClinic,
+        clinicsToUse,
+        villages,
+        populationPoints
+      );
+      setGaiaRecommendations(recommendations);
+    } else {
+      setImpactAnalysis(null);
+      setGaiaRecommendations([]);
+    }
+  }, [selectedClinic, villages, populationPoints, currentTab, currentClinics, hypotheticalClinics]);
+
+  const handleSelectClinic = (clinic: Clinic | null) => {
+    setSelectedClinic(clinic);
+  };
+
+  const handleAddGAIALocation = (rec: GAIARecommendation) => {
+    const newClinic: Clinic = {
+      id: `gaia-mhc-${Date.now()}`,
+      name: `GAIA MHC - ${rec.villageName}`,
+      type: 'gaia',
+      lat: rec.lat,
+      lng: rec.lng,
+    };
+    if (currentTab === 'current') {
+      setCurrentClinics([...currentClinics, newClinic]);
+    } else {
+      setHypotheticalClinics([...hypotheticalClinics, newClinic]);
+    }
   };
 
   return (
@@ -399,6 +454,16 @@ export default function Home() {
               districts={districts}
             />
 
+            {/* Impact Analysis for selected govt clinic */}
+            {selectedClinic && impactAnalysis && (
+              <ClinicImpactAnalysis
+                clinic={selectedClinic}
+                impact={impactAnalysis}
+                gaiaRecommendations={gaiaRecommendations}
+                onAddGAIALocation={handleAddGAIALocation}
+              />
+            )}
+
             {recommendations.length > 0 && (
               <Recommendations 
                 recommendations={recommendations}
@@ -408,7 +473,9 @@ export default function Home() {
             )}
             <ClinicList 
               clinics={currentTab === 'current' ? filteredCurrentClinics : filteredHypotheticalClinics} 
-              onRemove={handleRemoveClinic} 
+              onRemove={handleRemoveClinic}
+              onSelectClinic={handleSelectClinic}
+              selectedClinicId={selectedClinic?.id || null}
             />
           </div>
         </div>
