@@ -8,6 +8,7 @@ import DistrictBoundaries from './DistrictBoundaries';
 import HeatmapLayer from './HeatmapLayer';
 
 // Fix for default marker icons in Next.js
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
@@ -18,14 +19,16 @@ L.Icon.Default.mergeOptions({
 interface MapProps {
   clinics: Clinic[];
   onMapClick?: (lat: number, lng: number) => void;
+  onClinicClick?: (clinic: Clinic) => void;
   disableInteractions?: boolean;
   populationPoints?: Array<{ lat: number; lng: number; population: number }>;
   showHeatmap?: boolean;
   recommendedLocations?: Array<{ lat: number; lng: number; score: number; uncoveredPopulation: number }>;
   selectedDistrict?: string;
+  onRecommendedClick?: (rec: { lat: number; lng: number; score: number; uncoveredPopulation: number }) => void;
 }
 
-function MapUpdater({ clinics }: { clinics: Clinic[] }) {
+function MapUpdater() {
   const map = useMap();
   
   useEffect(() => {
@@ -79,28 +82,35 @@ function MapClickHandler({ onMapClick, disabled }: { onMapClick?: (lat: number, 
 
 export default function Map({ 
   clinics, 
-  onMapClick, 
+  onMapClick,
+  onClinicClick,
   disableInteractions = false,
   populationPoints = [],
   showHeatmap = false,
   recommendedLocations = [],
   selectedDistrict,
+  onRecommendedClick,
 }: MapProps) {
   const getClinicColor = (type: Clinic['type']) => {
-    switch (type) {
-      case 'gaia': return '#10b981'; // green
-      case 'govt': return '#3b82f6'; // blue
-      case 'healthcentre': return '#f97316'; // orange
-      case 'other': return '#6b7280'; // gray
-      default: return '#6b7280';
+    // GAIA clinics = green, all others = gray
+    if (type === 'gaia') {
+      return '#10b981'; // green
     }
+    return '#6b7280'; // gray for all others (govt, healthcentre, other)
   };
 
   const getClinicIcon = (type: Clinic['type']) => {
     const color = getClinicColor(type);
+    const isHealthCentre = type === 'healthcentre';
+    
+    // Health centres use square shape, all others use circle
+    const shapeStyle = isHealthCentre 
+      ? 'width: 20px; height: 20px; border-radius: 2px;' // square with rounded corners
+      : 'width: 20px; height: 20px; border-radius: 50%;'; // circle
+    
     return L.divIcon({
       className: 'custom-marker',
-      html: `<div style="background-color: ${color}; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
+      html: `<div style="background-color: ${color}; ${shapeStyle} border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
       iconSize: [20, 20],
       iconAnchor: [10, 10],
     });
@@ -146,7 +156,7 @@ export default function Map({
           clinics={clinics}
           populationPoints={populationPoints}
         />
-        <MapUpdater clinics={clinics} />
+        <MapUpdater />
         <MapClickHandler onMapClick={onMapClick} disabled={disableInteractions} />
         {clinics.map((clinic) => (
           <div key={clinic.id}>
@@ -163,17 +173,14 @@ export default function Map({
             <Marker
               position={[clinic.lat, clinic.lng]}
               icon={getClinicIcon(clinic.type)}
-            >
-              <Popup>
-                <div className="p-2">
-                  <h3 className="font-semibold text-black">{clinic.name}</h3>
-                  <p className="text-sm text-black capitalize">{clinic.type}</p>
-                  {clinic.district && (
-                    <p className="text-sm text-gray-600">District: {clinic.district}</p>
-                  )}
-                </div>
-              </Popup>
-            </Marker>
+              eventHandlers={{
+                click: () => {
+                  if (onClinicClick) {
+                    onClinicClick(clinic);
+                  }
+                },
+              }}
+            />
           </div>
         ))}
         {recommendedLocations.map((rec, index) => (
@@ -202,6 +209,14 @@ export default function Map({
                   <p className="text-sm text-black">
                     Uncovered Population: {rec.uncoveredPopulation.toLocaleString()}
                   </p>
+                  {onRecommendedClick && (
+                    <button
+                      onClick={() => onRecommendedClick(rec)}
+                      className="mt-2 w-full px-3 py-1.5 bg-amber-600 text-white rounded hover:bg-amber-700 text-sm font-medium"
+                    >
+                      Add Clinic
+                    </button>
+                  )}
                 </div>
               </Popup>
             </Marker>

@@ -18,13 +18,11 @@ export default function ClinicList({ clinics, onRemove, onSelectClinic, selected
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   const getClinicTypeColor = (type: Clinic['type']) => {
-    switch (type) {
-      case 'gaia': return 'bg-green-100 text-green-800 border-green-300';
-      case 'govt': return 'bg-blue-100 text-blue-800 border-blue-300';
-      case 'healthcentre': return 'bg-orange-100 text-orange-800 border-orange-300';
-      case 'other': return 'bg-gray-100 text-gray-800 border-gray-300';
-      default: return 'bg-gray-100 text-black border-gray-300';
+    // GAIA = green, all others = gray
+    if (type === 'gaia') {
+      return 'bg-green-100 text-green-800 border-green-300';
     }
+    return 'bg-gray-100 text-gray-800 border-gray-300';
   };
 
   const getClinicTypeLabel = (type: Clinic['type']) => {
@@ -72,34 +70,31 @@ export default function ClinicList({ clinics, onRemove, onSelectClinic, selected
     }
   };
 
-  const clinicsByType = {
+  const clinicsByCategory = {
     gaia: clinics.filter(c => c.type === 'gaia'),
-    govt: clinics.filter(c => c.type === 'govt'),
-    healthcentre: clinics.filter(c => c.type === 'healthcentre'),
-    other: clinics.filter(c => c.type === 'other'),
+    allOthers: clinics.filter(c => c.type !== 'gaia'),
   };
+  
+  const healthCentres = clinics.filter(c => c.type === 'healthcentre');
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
       <h2 className="text-2xl font-bold text-black mb-4">Clinics ({clinics.length})</h2>
       
-      {/* Summary by type */}
-      <div className="grid grid-cols-4 gap-2 mb-4 text-sm">
+      {/* Summary by category */}
+      <div className="grid grid-cols-2 gap-2 mb-4 text-sm">
         <div className="bg-green-50 p-2 rounded text-center">
           <div className="font-semibold text-green-800">GAIA</div>
-          <div className="text-green-600">{clinicsByType.gaia.length}</div>
-        </div>
-        <div className="bg-blue-50 p-2 rounded text-center">
-          <div className="font-semibold text-blue-800">Government</div>
-          <div className="text-blue-600">{clinicsByType.govt.length}</div>
-        </div>
-        <div className="bg-orange-50 p-2 rounded text-center">
-          <div className="font-semibold text-orange-800">Health Centre</div>
-          <div className="text-orange-600">{clinicsByType.healthcentre.length}</div>
+          <div className="text-green-600">{clinicsByCategory.gaia.length}</div>
         </div>
         <div className="bg-gray-50 p-2 rounded text-center">
           <div className="font-semibold text-gray-800">Other</div>
-          <div className="text-gray-600">{clinicsByType.other.length}</div>
+          <div className="text-gray-600">{clinicsByCategory.allOthers.length}</div>
+          {healthCentres.length > 0 && (
+            <div className="text-xs text-gray-600 mt-1">
+              ({healthCentres.length} health centres)
+            </div>
+          )}
         </div>
       </div>
 
@@ -126,7 +121,9 @@ export default function ClinicList({ clinics, onRemove, onSelectClinic, selected
               >
                 District {sortField === 'district' && (sortDirection === 'asc' ? '↑' : '↓')}
               </th>
-              <th className="text-right p-2">Actions</th>
+              {onSelectClinic && (
+                <th className="text-right p-2">Actions</th>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -146,32 +143,25 @@ export default function ClinicList({ clinics, onRemove, onSelectClinic, selected
                     </span>
                   </td>
                   <td className="p-2 text-gray-600">{clinic.district || 'N/A'}</td>
-                  <td className="p-2 text-right">
-                    {isGovt && onSelectClinic && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onSelectClinic(isSelected ? null : clinic);
-                        }}
-                        className={`mr-2 px-2 py-1 rounded text-xs font-medium ${
-                          isSelected 
-                            ? 'bg-blue-600 text-white hover:bg-blue-700' 
-                            : 'bg-blue-100 text-blue-800 hover:bg-blue-200'
-                        }`}
-                      >
-                        {isSelected ? 'Hide Impact' : 'View Impact'}
-                      </button>
-                    )}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onRemove(clinic.id);
-                      }}
-                      className="text-red-600 hover:text-red-800 font-semibold text-xs"
-                    >
-                      Remove
-                    </button>
-                  </td>
+                  {onSelectClinic && (
+                    <td className="p-2 text-right">
+                      {isGovt && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onSelectClinic(isSelected ? null : clinic);
+                          }}
+                          className={`px-2 py-1 rounded text-xs font-medium ${
+                            isSelected 
+                              ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                              : 'bg-blue-100 text-blue-800 hover:bg-blue-200'
+                          }`}
+                        >
+                          {isSelected ? 'Hide Impact' : 'View Impact'}
+                        </button>
+                      )}
+                    </td>
+                  )}
                 </tr>
               );
             })}
