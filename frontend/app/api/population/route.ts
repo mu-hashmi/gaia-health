@@ -1,12 +1,34 @@
 import { NextResponse } from 'next/server';
+import { readFile } from 'fs/promises';
 import { join } from 'path';
+
+// Cache for 24 hours (86400 seconds)
+export const revalidate = 86400;
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const sampleFactor = parseInt(searchParams.get('sampleFactor') || '5', 10);
     
-    // Read the GeoTIFF file from the file system
+    // If using default sampleFactor (5), try to load from pre-processed static file first
+    if (sampleFactor === 5) {
+      const staticPath = join(process.cwd(), 'public', 'data', 'population.json');
+      try {
+        const staticData = await readFile(staticPath, 'utf-8');
+        const points = JSON.parse(staticData);
+        
+        return NextResponse.json(points, {
+          headers: {
+            'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=43200',
+          },
+        });
+      } catch (staticError) {
+        // Fallback to processing from source files
+        console.log('Static file not found, processing from source...');
+      }
+    }
+    
+    // Process from GeoTIFF (either custom sampleFactor or fallback)
     const filePath = join(process.cwd(), 'app', 'data', 'mwi_ppp_2020_UNadj_constrained.tif');
     
     // Parse GeoTIFF using fromFile (designed for Node.js file system)
@@ -62,7 +84,11 @@ export async function GET(request: Request) {
       }
     }
     
-    return NextResponse.json(points);
+    return NextResponse.json(points, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=1800',
+      },
+    });
   } catch (error) {
     console.error('Error loading population density:', error);
     return NextResponse.json({ error: 'Failed to load population density' }, { status: 500 });
