@@ -1,16 +1,14 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 
 // Force dynamic rendering since we use request.url for search params
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
-// Cache for 24 hours (86400 seconds)
-export const revalidate = 86400;
-
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
+    const searchParams = request.nextUrl.searchParams;
     const sampleFactor = parseInt(searchParams.get('sampleFactor') || '5', 10);
     
     // If using default sampleFactor (5), try to load from pre-processed static file first
