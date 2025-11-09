@@ -5,6 +5,7 @@ import { MapContainer, TileLayer, Circle, Marker, Popup, useMap } from 'react-le
 import L from 'leaflet';
 import { Clinic } from '../types';
 import HeatmapLayer from './HeatmapLayer';
+import DistrictBoundaries from './DistrictBoundaries';
 
 // Fix for default marker icons in Next.js
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -21,6 +22,7 @@ interface MapProps {
   populationPoints?: Array<{ lat: number; lng: number; population: number }>;
   showHeatmap?: boolean;
   recommendedLocations?: Array<{ lat: number; lng: number; score: number; uncoveredPopulation: number }>;
+  selectedDistrict?: string;
 }
 
 function MapUpdater({ clinics }: { clinics: Clinic[] }) {
@@ -82,6 +84,7 @@ export default function Map({
   populationPoints = [],
   showHeatmap = false,
   recommendedLocations = [],
+  selectedDistrict,
 }: MapProps) {
   const getClinicColor = (type: Clinic['type']) => {
     switch (type) {
@@ -136,6 +139,7 @@ export default function Map({
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        <DistrictBoundaries selectedDistrict={selectedDistrict} />
         <HeatmapLayer populationPoints={populationPoints} enabled={showHeatmap} />
         <MapUpdater clinics={clinics} />
         <MapClickHandler onMapClick={onMapClick} disabled={disableInteractions} />

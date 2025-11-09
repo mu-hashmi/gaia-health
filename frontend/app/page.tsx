@@ -317,6 +317,7 @@ export default function Home() {
                     populationPoints={populationPoints}
                     showHeatmap={showHeatmap}
                     recommendedLocations={recommendations}
+                    selectedDistrict={selectedDistrict}
                   />
                 )}
               </div>
