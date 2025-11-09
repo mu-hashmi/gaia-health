@@ -25,10 +25,10 @@ export async function GET(request: Request) {
     
     const points: Array<{ lat: number; lng: number; population: number }> = [];
     
-    // Focus on Malawi area of interest (Mulanje, Phalombe, Mangochi districts)
-    const minLat = -16.5;
-    const maxLat = -14.0;
-    const minLng = 34.5;
+    // Malawi bounds: approximately -17.1 to -9.4 latitude, 32.7 to 35.9 longitude
+    const minLat = -17.2;
+    const maxLat = -9.3;
+    const minLng = 32.6;
     const maxLng = 36.0;
     
     const minX = Math.max(0, Math.floor((minLng - bbox[0]) / pixelWidth));
@@ -46,11 +46,17 @@ export async function GET(request: Request) {
         const lng = bbox[0] + (x + 0.5) * pixelWidth;
         const lat = bbox[3] - (y + 0.5) * pixelHeight;
         
+        // Filter to Malawi bounds
         if (lat >= minLat && lat <= maxLat && lng >= minLng && lng <= maxLng) {
+          // Scale population by sampleFactor^2 to account for skipped pixels
+          // Each sampled pixel represents sampleFactor^2 pixels in the original data
+          // This ensures accurate total population calculation even when sampling
+          const scaledPopulation = Math.round((population as number) * sampleFactor * sampleFactor);
+          
           points.push({
             lat,
             lng,
-            population: Math.round(population as number),
+            population: scaledPopulation,
           });
         }
       }

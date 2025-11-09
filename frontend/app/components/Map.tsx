@@ -27,13 +27,14 @@ function MapUpdater({ clinics }: { clinics: Clinic[] }) {
   const map = useMap();
   
   useEffect(() => {
-    if (clinics.length > 0) {
-      const bounds = L.latLngBounds(
-        clinics.map(clinic => [clinic.lat, clinic.lng])
-      );
-      map.fitBounds(bounds, { padding: [50, 50] });
-    }
-  }, [clinics, map]);
+    // Set fixed bounds for Malawi
+    const malawiBounds = L.latLngBounds(
+      [-17.2, 32.6], // Southwest corner
+      [-9.3, 36.0]    // Northeast corner
+    );
+    map.setMaxBounds(malawiBounds);
+    map.fitBounds(malawiBounds, { padding: [20, 20] });
+  }, [map]);
 
   return null;
 }
@@ -112,14 +113,23 @@ export default function Map({
     });
   };
 
-  // Malawi approximate center
-  const center: [number, number] = [-15.7833, 35.5167];
+  // Malawi center
+  const center: [number, number] = [-13.25, 34.3];
+  
+  // Malawi bounds to restrict map view
+  const malawiBounds = L.latLngBounds(
+    [-17.2, 32.6], // Southwest corner
+    [-9.3, 36.0]    // Northeast corner
+  );
 
   return (
     <div className="w-full h-full">
       <MapContainer
         center={center}
-        zoom={9}
+        zoom={7}
+        minZoom={6}
+        maxBounds={malawiBounds}
+        maxBoundsViscosity={1.0}
         style={{ height: '100%', width: '100%' }}
       >
         <TileLayer

@@ -55,7 +55,7 @@ export async function loadGAIAClinics(): Promise<Clinic[]> {
 
 /**
  * Parse MHFR facilities CSV
- * Filter: Only functional facilities with valid coordinates in Mulanje, Phalombe, or Mangochi districts
+ * Filter: Only functional facilities with valid coordinates in Malawi
  */
 export async function loadMHFRClinics(): Promise<Clinic[]> {
   const filePath = join(process.cwd(), 'app', 'data', 'MHFR_Facilities.xlsx - Facilities.csv');
@@ -66,7 +66,6 @@ export async function loadMHFRClinics(): Promise<Clinic[]> {
     skipEmptyLines: true,
   });
 
-  const targetDistricts = ['Mulanje', 'Phalombe', 'Mangochi'];
   const clinics: Clinic[] = [];
   
   for (let i = 0; i < result.data.length; i++) {
@@ -74,10 +73,6 @@ export async function loadMHFRClinics(): Promise<Clinic[]> {
     
     // Filter: Must be functional
     if (row.STATUS?.toLowerCase() !== 'functional') continue;
-    
-    // Filter: Must be in target districts
-    const district = row.DISTRICT?.trim();
-    if (!district || !targetDistricts.includes(district)) continue;
     
     // Filter: Must have valid coordinates
     const latStr = row.LATITUDE?.trim().replace(/\s+/g, ''); // Remove any spaces

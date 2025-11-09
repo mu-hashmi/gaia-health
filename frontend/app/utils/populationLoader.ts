@@ -44,10 +44,9 @@ export async function loadPopulationDensity(
         const lng = bbox[0] + (x + 0.5) * pixelWidth;
         const lat = bbox[3] - (y + 0.5) * pixelHeight; // Y is inverted in image coordinates
         
-        // Filter to Malawi bounds approximately (focus on the three districts)
-        // Mulanje, Phalombe, Mangochi are roughly:
-        // Lat: -16.2 to -14.3, Lng: 34.7 to 35.8
-        if (lat >= -16.5 && lat <= -14.0 && lng >= 34.5 && lng <= 36.0) {
+        // Filter to Malawi bounds
+        // Malawi: approximately -17.1 to -9.4 latitude, 32.7 to 35.9 longitude
+        if (lat >= -17.2 && lat <= -9.3 && lng >= 32.6 && lng <= 36.0) {
           points.push({
             lat,
             lng,
@@ -114,8 +113,8 @@ export async function loadPopulationDensityOptimized(
             continue;
           }
         } else {
-          // Default to Malawi area of interest
-          if (lat < -16.5 || lat > -14.0 || lng < 34.5 || lng > 36.0) {
+          // Default to Malawi bounds
+          if (lat < -17.2 || lat > -9.3 || lng < 32.6 || lng > 36.0) {
             continue;
           }
         }
