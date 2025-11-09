@@ -12,6 +12,11 @@ interface Analysis {
   medicalDesert: string;
 }
 
+function truncateToTwoLines(text: string): string {
+  const lines = text.split('\n').filter(line => line.trim());
+  return lines.slice(0, 2).join('\n');
+}
+
 export default function ClinicDetailedAnalysis() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -81,6 +86,7 @@ export default function ClinicDetailedAnalysis() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center gap-4">
             <button
+              type="button"
               onClick={() => router.back()}
               className="text-blue-600 hover:text-blue-700 font-medium"
             >
@@ -126,25 +132,25 @@ export default function ClinicDetailedAnalysis() {
             <div className="space-y-4">
               {/* Local Danger */}
               <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-red-500">
-                <h3 className="text-xl font-bold text-red-700 mb-3">Local Danger</h3>
-                <p className="text-gray-700 whitespace-pre-wrap">
-                  {analysis.localDanger}
+                <h3 className="text-xl font-bold text-red-700 mb-3">1. Local Danger</h3>
+                <p className="text-gray-700 whitespace-pre-wrap line-clamp-2">
+                  {truncateToTwoLines(analysis.localDanger)}
                 </p>
               </div>
 
               {/* Medical Desert */}
               <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-yellow-500">
-                <h3 className="text-xl font-bold text-yellow-700 mb-3">Medical Desert Status</h3>
-                <p className="text-gray-700">
-                  {analysis.medicalDesert}
+                <h3 className="text-xl font-bold text-yellow-700 mb-3">2. Medical Desert Status</h3>
+                <p className="text-gray-700 line-clamp-2">
+                  {truncateToTwoLines(analysis.medicalDesert)}
                 </p>
               </div>
 
               {/* Medication Problems */}
               <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-orange-500">
-                <h3 className="text-xl font-bold text-orange-700 mb-3">Major Medication Problems</h3>
-                <p className="text-gray-700 whitespace-pre-wrap">
-                  {analysis.medicationProblems}
+                <h3 className="text-xl font-bold text-orange-700 mb-3">3. Major Medication Problems</h3>
+                <p className="text-gray-700 whitespace-pre-wrap line-clamp-2">
+                  {truncateToTwoLines(analysis.medicationProblems)}
                 </p>
               </div>
             </div>
