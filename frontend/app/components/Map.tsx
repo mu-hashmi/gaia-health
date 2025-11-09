@@ -197,17 +197,7 @@ export default function Map({
                   }
                 },
               }}
-            >
-              <Popup>
-                <div className="p-3 min-w-[260px]">
-                  <h3 className="font-semibold text-black mb-1">{clinic.name}</h3>
-                  <p className="text-sm text-black capitalize mb-1">{clinic.type}</p>
-                  {clinic.district && (
-                    <p className="text-sm text-gray-600 mb-3">District: {clinic.district}</p>
-                  )}
-                </div>
-              </Popup>
-            </Marker>
+            />
           </div>
         );
         })}
