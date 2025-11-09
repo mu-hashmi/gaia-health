@@ -107,6 +107,7 @@ export async function loadMHFRClinics(): Promise<Clinic[]> {
       type,
       lat,
       lng,
+      district: row.DISTRICT?.trim() || undefined,
     });
   }
   

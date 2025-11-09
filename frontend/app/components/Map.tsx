@@ -159,6 +159,9 @@ export default function Map({
                 <div className="p-2">
                   <h3 className="font-semibold text-black">{clinic.name}</h3>
                   <p className="text-sm text-black capitalize">{clinic.type}</p>
+                  {clinic.district && (
+                    <p className="text-sm text-gray-600">District: {clinic.district}</p>
+                  )}
                 </div>
               </Popup>
             </Marker>

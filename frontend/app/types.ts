@@ -6,6 +6,7 @@ export interface Clinic {
   type: ClinicType;
   lat: number;
   lng: number;
+  district?: string;
 }
 
 export interface CoverageStats {

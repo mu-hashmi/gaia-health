@@ -9,6 +9,8 @@ import CoverageStatsComponent from './components/CoverageStats';
 import ClinicList from './components/ClinicList';
 import AddClinicModal from './components/AddClinicModal';
 import Recommendations from './components/Recommendations';
+import PopulationCoverage from './components/PopulationCoverage';
+import DistrictStats from './components/DistrictStats';
 
 // Dynamically import Map to avoid SSR issues with Leaflet
 const Map = dynamic(() => import('./components/Map'), { ssr: false });
@@ -34,16 +36,20 @@ export default function Home() {
   const [recommendations, setRecommendations] = useState<RecommendedLocation[]>([]);
   const [isGeneratingRecommendations, setIsGeneratingRecommendations] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(true);
+  const [selectedDistrict, setSelectedDistrict] = useState<string>('');
+  const [selectedClinicTypes, setSelectedClinicTypes] = useState<Set<Clinic['type']>>(new Set(['gaia', 'govt', 'cham']));
+  const [districts, setDistricts] = useState<Array<{ name: string; id: number }>>([]);
 
   // Load real data on mount
   useEffect(() => {
     async function loadData() {
       try {
         setIsLoadingData(true);
-        // Load clinics and population data in parallel
-        const [clinicsResponse, populationResponse] = await Promise.all([
+        // Load clinics, population, and districts data in parallel
+        const [clinicsResponse, populationResponse, districtsResponse] = await Promise.all([
           fetch('/api/clinics'),
           fetch('/api/population?sampleFactor=5'),
+          fetch('/api/districts'),
         ]);
 
         if (!clinicsResponse.ok || !populationResponse.ok) {
@@ -52,16 +58,19 @@ export default function Home() {
 
         const clinics = await clinicsResponse.json();
         const population = await populationResponse.json();
+        const districtsData = districtsResponse.ok ? await districtsResponse.json() : [];
 
         setCurrentClinics(clinics);
         setHypotheticalClinics(clinics);
         setPopulationPoints(population);
+        setDistricts(districtsData);
       } catch (error) {
         console.error('Error loading data:', error);
         // Fallback to empty arrays on error
         setCurrentClinics([]);
         setHypotheticalClinics([]);
         setPopulationPoints([]);
+        setDistricts([]);
       } finally {
         setIsLoadingData(false);
       }
@@ -70,21 +79,41 @@ export default function Home() {
     loadData();
   }, []);
 
-  // Calculate coverage for current clinics
+  // Filter clinics based on district and clinic types
+  const getFilteredClinics = (clinics: Clinic[]) => {
+    return clinics.filter(clinic => {
+      // Filter by clinic type
+      if (!selectedClinicTypes.has(clinic.type)) {
+        return false;
+      }
+      // Filter by district
+      if (selectedDistrict && clinic.district !== selectedDistrict) {
+        return false;
+      }
+      return true;
+    });
+  };
+
+  const filteredCurrentClinics = getFilteredClinics(currentClinics);
+  const filteredHypotheticalClinics = getFilteredClinics(hypotheticalClinics);
+
+  // Calculate coverage for current clinics (using filtered clinics)
   useEffect(() => {
     if (populationPoints.length > 0) {
-      const stats = calculateCoverage(currentClinics, populationPoints);
+      const filtered = getFilteredClinics(currentClinics);
+      const stats = calculateCoverage(filtered, populationPoints);
       setCurrentStats(stats);
     }
-  }, [currentClinics, populationPoints]);
+  }, [currentClinics, populationPoints, selectedDistrict, selectedClinicTypes]);
 
-  // Calculate coverage for hypothetical clinics
+  // Calculate coverage for hypothetical clinics (using filtered clinics)
   useEffect(() => {
     if (populationPoints.length > 0) {
-      const stats = calculateCoverage(hypotheticalClinics, populationPoints);
+      const filtered = getFilteredClinics(hypotheticalClinics);
+      const stats = calculateCoverage(filtered, populationPoints);
       setHypotheticalStats(stats);
     }
-  }, [hypotheticalClinics, populationPoints]);
+  }, [hypotheticalClinics, populationPoints, selectedDistrict, selectedClinicTypes]);
 
   const handleRemoveClinic = (id: string) => {
     if (currentTab === 'current') {
@@ -146,6 +175,16 @@ export default function Home() {
     setRecommendations(recommendations.filter(r => r !== rec));
   };
 
+  const handleClinicTypeToggle = (type: Clinic['type']) => {
+    const newSet = new Set(selectedClinicTypes);
+    if (newSet.has(type)) {
+      newSet.delete(type);
+    } else {
+      newSet.add(type);
+    }
+    setSelectedClinicTypes(newSet);
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
       <header className="bg-white shadow-sm border-b">
@@ -191,6 +230,56 @@ export default function Home() {
                     </button>
                   </div>
                 </div>
+                {/* Filters */}
+                <div className="mt-3 space-y-2">
+                  <div className="flex items-center gap-4">
+                    <label className="text-sm font-medium text-black">District Filter:</label>
+                    <select
+                      value={selectedDistrict}
+                      onChange={(e) => setSelectedDistrict(e.target.value)}
+                      className="px-3 py-1 border rounded text-sm"
+                    >
+                      <option value="">All Districts</option>
+                      {districts.map(district => (
+                        <option key={district.id} value={district.name}>
+                          {district.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <label className="text-sm font-medium text-black">Clinic Types:</label>
+                    <div className="flex gap-3">
+                      <label className="flex items-center gap-1 text-sm cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={selectedClinicTypes.has('gaia')}
+                          onChange={() => handleClinicTypeToggle('gaia')}
+                          className="w-4 h-4"
+                        />
+                        <span className="text-black">GAIA</span>
+                      </label>
+                      <label className="flex items-center gap-1 text-sm cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={selectedClinicTypes.has('govt')}
+                          onChange={() => handleClinicTypeToggle('govt')}
+                          className="w-4 h-4"
+                        />
+                        <span className="text-black">Government</span>
+                      </label>
+                      <label className="flex items-center gap-1 text-sm cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={selectedClinicTypes.has('cham')}
+                          onChange={() => handleClinicTypeToggle('cham')}
+                          className="w-4 h-4"
+                        />
+                        <span className="text-black">CHAM</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
                 <div className="flex gap-4 mt-3 text-sm">
                   <div className="flex items-center gap-2">
                     <div className="w-4 h-4 rounded-full bg-green-500"></div>
@@ -222,7 +311,7 @@ export default function Home() {
                   </div>
                 ) : (
                   <Map 
-                    clinics={currentTab === 'current' ? currentClinics : hypotheticalClinics} 
+                    clinics={currentTab === 'current' ? filteredCurrentClinics : filteredHypotheticalClinics} 
                     onMapClick={handleMapClick} 
                     disableInteractions={isModalOpen}
                     populationPoints={populationPoints}
@@ -275,15 +364,28 @@ export default function Home() {
               />
             )}
 
+            {/* Population Coverage Component */}
+            <PopulationCoverage
+              clinics={currentTab === 'current' ? filteredCurrentClinics : filteredHypotheticalClinics}
+              populationPoints={populationPoints}
+            />
+
+            {/* District Stats Component */}
+            <DistrictStats
+              clinics={currentTab === 'current' ? filteredCurrentClinics : filteredHypotheticalClinics}
+              populationPoints={populationPoints}
+              districts={districts}
+            />
+
             {recommendations.length > 0 && (
               <Recommendations 
                 recommendations={recommendations}
                 onAddRecommended={handleAddRecommended}
-                clinics={currentTab === 'current' ? currentClinics : hypotheticalClinics}
+                clinics={currentTab === 'current' ? filteredCurrentClinics : filteredHypotheticalClinics}
               />
             )}
             <ClinicList 
-              clinics={currentTab === 'current' ? currentClinics : hypotheticalClinics} 
+              clinics={currentTab === 'current' ? filteredCurrentClinics : filteredHypotheticalClinics} 
               onRemove={handleRemoveClinic} 
             />
           </div>
