@@ -3,244 +3,200 @@
 import { useEffect, useState } from 'react';
 import { Clinic } from '../types';
 
-interface AnalysisResult {
-  childrenPercentage: number | string;
-  conflictRisks: {
-    war: boolean;
-    highCrime: boolean;
-    gangViolence: boolean;
-    description: string;
-  };
-  medicationDesert: {
-    isMedicationDesert: boolean;
-    nearestPharmacyDistance: number | string;
-    description: string;
-  };
-  majorHealthIssues: string[];
-  summary: string;
-  isLoading: boolean;
-  error: string | null;
+interface AnalysisData {
+  analysis: string;
+  isMedicalDesert: boolean;
+  nearbyPharmaciesCount: number;
+  hasPharmacyData: boolean;
 }
 
 export default function ClinicAnalysisWidget({ clinic }: { clinic: Clinic }) {
-  const [analysis, setAnalysis] = useState<AnalysisResult>({
-    childrenPercentage: 0,
-    conflictRisks: {
-      war: false,
-      highCrime: false,
-      gangViolence: false,
-      description: '',
-    },
-    medicationDesert: {
-      isMedicationDesert: false,
-      nearestPharmacyDistance: 0,
-      description: '',
-    },
-    majorHealthIssues: [],
-    summary: '',
-    isLoading: true,
-    error: null,
-  });
+  const [analysis, setAnalysis] = useState<AnalysisData | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function analyzeClinic() {
+    async function fetchAnalysis() {
+      setIsLoading(true);
+      setError(null);
+      
       try {
-        setAnalysis(prev => ({ ...prev, isLoading: true, error: null }));
-
         const response = await fetch('/api/clinic-analysis', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            clinicId: clinic.id,
-            clinicName: clinic.name,
-            district: clinic.district,
             lat: clinic.lat,
             lng: clinic.lng,
+            clinicName: clinic.name,
+            district: clinic.district,
           }),
         });
 
         if (!response.ok) {
-          throw new Error('Failed to analyze clinic');
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to fetch analysis');
         }
 
         const data = await response.json();
-        setAnalysis(prev => ({
-          ...prev,
-          ...data,
-          isLoading: false,
-        }));
+        setAnalysis(data);
       } catch (err) {
-        setAnalysis(prev => ({
-          ...prev,
-          isLoading: false,
-          error: err instanceof Error ? err.message : 'An error occurred',
-        }));
+        setError(err instanceof Error ? err.message : 'An error occurred');
+        console.error('Error fetching clinic analysis:', err);
+      } finally {
+        setIsLoading(false);
       }
     }
 
-    analyzeClinic();
-  }, [clinic.id, clinic.name, clinic.district, clinic.lat, clinic.lng]);
+    fetchAnalysis();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [clinic.id]);
 
-  if (analysis.isLoading) {
+  const formatAnalysis = (text: string) => {
+    // Split by numbered headers (format: "1. Header Name")
+    const sections = text.split(/(?=^\d+\.\s+[^\n]+)/m);
+    return sections.map((section, index) => {
+      if (!section.trim()) return null;
+      
+      // Extract title
+      let titleMatch = section.match(/^\d+\.\s+([^\n]+?)(?:\n|$)/m);
+      if (!titleMatch) {
+        titleMatch = section.match(/\*\*(\d+\.\s+[^*]+?)\*\*/);
+      }
+      const title = titleMatch ? titleMatch[1].trim().replace(/^(\d+\.\s+)/, '$1') : '';
+      // Remove title from content
+      let content = section.replace(/^\d+\.\s+[^\n]+\n?/m, '').trim();
+      content = content.replace(/\*\*\d+\.\s+[^*]+\*\*\s*/g, '').trim();
+      
+      if (!title && !content) return null;
+      
+      // Format bullet points - should only be one per section
+      const lines = content.split('\n').filter(line => {
+        const trimmed = line.trim();
+        return trimmed && 
+               trimmed !== '•' && 
+               trimmed !== '-' && 
+               trimmed !== '**.' &&
+               !trimmed.match(/^[-•]\s*\.?\s*$/);
+      });
+      
+      // Take only the first bullet point (as per requirement)
+      const firstLine = lines[0]?.trim() || '';
+      if (!firstLine) return null;
+      
+      let formattedLine = firstLine.replace(/^[-•]\s*/, '');
+      formattedLine = formattedLine.replace(/\*\*/g, '').trim();
+      
+      if (!formattedLine || formattedLine === '.' || formattedLine === '**') {
+        return null;
+      }
+      
+      // Ensure it ends with a period if it's a sentence (unless it's N/A)
+      if (formattedLine && !formattedLine.match(/[.!?]$/) && formattedLine.toUpperCase() !== 'N/A') {
+        formattedLine = formattedLine + '.';
+      }
+      
+      return (
+        <div key={index} className="mb-6">
+          {title && (
+            <h4 className="font-bold text-2xl text-gray-800 mb-4">{title}</h4>
+          )}
+          <p className="mb-2 text-sm text-gray-700">
+            • {formattedLine}
+          </p>
+        </div>
+      );
+    }).filter(Boolean);
+  };
+
+  if (isLoading) {
     return (
-      <div className="flex items-center justify-center p-8">
+      <div className="flex items-center justify-center py-8">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Analyzing clinic...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+          <p className="text-sm text-gray-600">Analyzing location...</p>
         </div>
       </div>
     );
   }
 
-  if (analysis.error) {
+  if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-red-800 mb-2">Analysis Error</h3>
-        <p className="text-red-700">{analysis.error}</p>
+      <div className="bg-red-50 border border-red-200 rounded p-4 mb-4">
+        <p className="text-red-800 text-sm font-semibold mb-1">Error</p>
+        <p className="text-red-700 text-sm">{error}</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="mt-2 text-sm text-red-600 hover:text-red-800 underline"
+        >
+          Try again
+        </button>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {/* Summary */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-        <h2 className="text-2xl font-bold text-blue-900 mb-4">Clinic Analysis Summary</h2>
-        <p className="text-blue-800 text-lg leading-relaxed">{analysis.summary}</p>
+    <div className="bg-white rounded-lg shadow-xl p-6 max-w-4xl w-full">
+      <div className="mb-6">
+        <h3 className="text-2xl font-bold text-black mb-2">{clinic.name}</h3>
+        <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+          <p>
+            <span className="font-semibold">Coordinates:</span> {clinic.lat.toFixed(6)}, {clinic.lng.toFixed(6)}
+          </p>
+          {clinic.district && (
+            <p>
+              <span className="font-semibold">District:</span> {clinic.district}
+            </p>
+          )}
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Children Demographics */}
-        <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-6 border border-purple-200">
-          <h3 className="text-xl font-bold text-purple-900 mb-4 flex items-center gap-2">
-            <span className="text-2xl">👶</span>
-            Child Population
-          </h3>
-          <div className="bg-white rounded-lg p-4">
-            <div className="text-4xl font-bold text-purple-600 mb-2">
-              {typeof analysis.childrenPercentage === 'string'
-                ? analysis.childrenPercentage
-                : `${analysis.childrenPercentage.toFixed(1)}%`}
-            </div>
-            <p className="text-gray-700">of population are children (0-17 years)</p>
-          </div>
-        </div>
-
-        {/* Medication Desert Status */}
-        <div className={`rounded-lg p-6 border ${
-          analysis.medicationDesert.isMedicationDesert
-            ? 'bg-red-50 border-red-200'
-            : 'bg-green-50 border-green-200'
-        }`}>
-          <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-            <span className="text-2xl">💊</span>
-            <span className={analysis.medicationDesert.isMedicationDesert ? 'text-red-900' : 'text-green-900'}>
-              Medication Desert Status
+      {analysis && (
+        <div>
+          {/* Status Badges */}
+          <div className="flex gap-2 mb-4 flex-wrap">
+            <span
+              className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                analysis.isMedicalDesert
+                  ? 'bg-orange-100 text-orange-800 border border-orange-300'
+                  : analysis.hasPharmacyData
+                  ? 'bg-green-100 text-green-800 border border-green-300'
+                  : 'bg-yellow-100 text-yellow-800 border border-yellow-300'
+              }`}
+            >
+              {analysis.isMedicalDesert
+                ? '⚠️ Medical Desert'
+                : analysis.hasPharmacyData
+                ? '✓ Pharmacy Nearby'
+                : '⚠️ Pharmacy Data Unavailable'}
             </span>
-          </h3>
-          <div className="bg-white rounded-lg p-4">
-            <p className={`text-lg font-bold mb-2 ${
-              analysis.medicationDesert.isMedicationDesert ? 'text-red-600' : 'text-green-600'
-            }`}>
-              {analysis.medicationDesert.isMedicationDesert ? '⚠️ Yes - Medication Desert' : '✓ No - Adequate Pharmacy Access'}
-            </p>
-            <p className="text-gray-700 text-sm">
-              Nearest pharmacy: {typeof analysis.medicationDesert.nearestPharmacyDistance === 'string'
-                ? analysis.medicationDesert.nearestPharmacyDistance
-                : `${analysis.medicationDesert.nearestPharmacyDistance.toFixed(1)}km away`}
-            </p>
-            <p className="text-gray-600 text-sm mt-2">{analysis.medicationDesert.description}</p>
-          </div>
-        </div>
-
-        {/* Conflict & Safety Risks */}
-        <div className={`rounded-lg p-6 border ${
-          analysis.conflictRisks.war || analysis.conflictRisks.highCrime || analysis.conflictRisks.gangViolence
-            ? 'bg-orange-50 border-orange-200'
-            : 'bg-green-50 border-green-200'
-        }`}>
-          <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-            <span className="text-2xl">⚠️</span>
-            <span className={
-              analysis.conflictRisks.war || analysis.conflictRisks.highCrime || analysis.conflictRisks.gangViolence
-                ? 'text-orange-900'
-                : 'text-green-900'
-            }>
-              Conflict & Safety Assessment
-            </span>
-          </h3>
-          <div className="bg-white rounded-lg p-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-gray-700">War/Armed Conflict:</span>
-              <span className={`font-bold ${analysis.conflictRisks.war ? 'text-red-600' : 'text-green-600'}`}>
-                {analysis.conflictRisks.war ? '🔴 High Risk' : '🟢 Low Risk'}
+            {analysis.hasPharmacyData && (
+              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-300">
+                {analysis.nearbyPharmaciesCount} Pharmacy{analysis.nearbyPharmaciesCount !== 1 ? 'ies' : ''} within 5km
               </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-gray-700">High Crime:</span>
-              <span className={`font-bold ${analysis.conflictRisks.highCrime ? 'text-red-600' : 'text-green-600'}`}>
-                {analysis.conflictRisks.highCrime ? '🔴 High Risk' : '🟢 Low Risk'}
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-gray-700">Gang Violence:</span>
-              <span className={`font-bold ${analysis.conflictRisks.gangViolence ? 'text-red-600' : 'text-green-600'}`}>
-                {analysis.conflictRisks.gangViolence ? '🔴 High Risk' : '🟢 Low Risk'}
-              </span>
-            </div>
-            <div className="border-t pt-3 mt-3">
-              <p className="text-gray-600 text-sm">{analysis.conflictRisks.description}</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Major Health Issues */}
-        <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-lg p-6 border border-indigo-200">
-          <h3 className="text-xl font-bold text-indigo-900 mb-4 flex items-center gap-2">
-            <span className="text-2xl">🏥</span>
-            Major Health Issues
-          </h3>
-          <div className="bg-white rounded-lg p-4">
-            {analysis.majorHealthIssues.length > 0 ? (
-              <ul className="space-y-2">
-                {analysis.majorHealthIssues.map((issue, index) => (
-                  <li key={index} className="flex items-start gap-3">
-                    <span className="text-indigo-600 font-bold mt-1">•</span>
-                    <span className="text-gray-700">{issue}</span>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-gray-600">No major health issues identified</p>
             )}
           </div>
-        </div>
-      </div>
 
-      {/* Clinic Information */}
-      <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-        <h3 className="text-lg font-bold text-gray-900 mb-4">Clinic Information</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div>
-            <p className="text-sm text-gray-600">Clinic Name</p>
-            <p className="font-semibold text-gray-900">{clinic.name}</p>
+          {/* Analysis Content */}
+          <div className="border-t pt-4">
+            <div className="prose prose-sm max-w-none">
+              {formatAnalysis(analysis.analysis)}
+            </div>
           </div>
-          <div>
-            <p className="text-sm text-gray-600">Type</p>
-            <p className="font-semibold text-gray-900">{clinic.type.toUpperCase()}</p>
-          </div>
-          <div>
-            <p className="text-sm text-gray-600">District</p>
-            <p className="font-semibold text-gray-900">{clinic.district || 'Unknown'}</p>
-          </div>
-          <div>
-            <p className="text-sm text-gray-600">Coordinates</p>
-            <p className="font-semibold text-gray-900">{clinic.lat.toFixed(4)}, {clinic.lng.toFixed(4)}</p>
+
+          {/* Refresh Button */}
+          <div className="mt-4 pt-4 border-t">
+            <button
+              onClick={() => window.location.reload()}
+              disabled={isLoading}
+              className="text-sm text-blue-600 hover:text-blue-800 underline disabled:opacity-50"
+            >
+              Refresh Analysis
+            </button>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
