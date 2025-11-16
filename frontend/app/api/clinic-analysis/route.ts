@@ -74,14 +74,36 @@ Provide detailed, research-backed information. Use your knowledge of Malawi's he
     // Local Danger is placeholder
     const localDanger = 'High Risk';
 
-    // Parse medication problems from the response
+    // Parse medication problems from the response - extract only the medication content
+    let medicationProblems = analysisText;
+
+    // Try to extract text after "MAJOR MEDICATION PROBLEMS"
     const medicationMatch = analysisText.match(
-      /MAJOR MEDICATION PROBLEMS[:\s]*(.+?)$/i
-    ) || analysisText.match(
-      /2\.\s*MAJOR MEDICATION PROBLEMS[:\s]*(.+?)$/i
+      /(?:2\.\s*)?MAJOR MEDICATION PROBLEMS[:\s]*([\s\S]+?)$/i
     );
 
-    const medicationProblems = medicationMatch?.[1]?.trim() || analysisText;
+    if (medicationMatch && medicationMatch[1]) {
+      medicationProblems = medicationMatch[1].trim();
+    } else if (analysisText.includes('MAJOR MEDICATION PROBLEMS')) {
+      // If header exists but no content after it, extract everything after the header
+      const parts = analysisText.split(/(?:2\.\s*)?MAJOR MEDICATION PROBLEMS[:\s]*/i);
+      medicationProblems = parts[1]?.trim() || analysisText;
+    }
+
+    // Remove markdown headers (lines starting with #) and LOCAL DANGER content
+    medicationProblems = medicationProblems
+      .split('\n')
+      .filter(line => {
+        const trimmed = line.trim();
+        // Remove markdown headers (####, ###, ##, #)
+        if (trimmed.match(/^#+\s/)) return false;
+        // Remove LOCAL DANGER lines
+        if (trimmed.match(/LOCAL DANGER/i)) return false;
+        // Keep non-empty lines
+        return trimmed.length > 0;
+      })
+      .join('\n')
+      .trim();
 
     const medicalDesert = isMedicalDesert
       ? 'Yes - No pharmacy within 5km'
