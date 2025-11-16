@@ -91,3 +91,6 @@ app/
 - Coverage radius is set to 5km (as per problem statement)
 - Population points are randomly generated for demonstration
 - In production, this would integrate with real GAIA clinic data and HDX population density datasets
+
+
+i like the doggies in doggy land
